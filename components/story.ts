@@ -81,8 +81,8 @@ export function storyBeats(order: OrderDetail): StoryBeat[] {
       id: "hub",
       role: "hub",
       href: "/hub",
-      title: `${shipment.hubName} desk`,
-      detail: hubDone ? "Released, held, or closed." : "The bag is not packed until this desk says so.",
+      title: "Local hub",
+      detail: hubDone ? "Released, held, or closed." : `The bag stays at ${shipment.hubName} until this portal releases it.`,
       status: active === "hub" ? "now" : hubDone ? "done" : "later",
     },
     {
@@ -130,7 +130,7 @@ export function holdingLine(role: Role, order: OrderDetail): string {
     return "You are Rider 1. Collecting cash and handing the parcel are two separate taps.";
   }
   if (role === "hub") {
-    return `${order.shipment.hubName} desk, same morning. The phone screens write into this queue.`;
+    return `Local hub portal for ${order.shipment.hubName}. The phones write into this queue.`;
   }
   return "The six orders you can play, counted once. This is a scenario, not a measured saving.";
 }

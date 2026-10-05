@@ -99,7 +99,7 @@ function cueFor(role: Role, order: OrderDetail, play: string | null): Cue {
         n: 3,
         total: TOTAL,
         title: role === "hub" ? "Tap Confirm tomorrow" : "Open the hub",
-        where: role === "hub" ? "The one pink button on the desk" : "The pink button under the steps",
+        where: role === "hub" ? "The one button in the local hub portal" : "The pink button under the steps",
         detail: "Confirming keeps the parcel at the hub for the next run. That is not a delivery.",
       };
     }
@@ -109,8 +109,8 @@ function cueFor(role: Role, order: OrderDetail, play: string | null): Cue {
         n: 3,
         total: TOTAL,
         title: role === "hub" ? `Tap Send the rider to ${buyer}` : "Open the hub",
-        where: role === "hub" ? "The one pink button on the desk" : "The pink button under the steps",
-        detail: `${buyer} is home. The rider goes to her address and collects the cash from her.`,
+        where: role === "hub" ? "The one button in the local hub portal" : "The pink button under the steps",
+        detail: `${buyer} is home. Rider 1 goes to her address and collects the cash from her.`,
       };
     }
     return {
@@ -118,8 +118,8 @@ function cueFor(role: Role, order: OrderDetail, play: string | null): Cue {
       n: 3,
       total: TOTAL,
       title: role === "hub" ? "Tap Send the rider" : "Open the hub",
-      where: role === "hub" ? "The one pink button on the desk" : "The pink button under the steps",
-      detail: "The desk lets the parcel go only after every check passes. Until then the rider has no stop.",
+      where: role === "hub" ? "The one button in the local hub portal" : "The pink button under the steps",
+      detail: "The local hub portal lets the parcel go only after every check passes. Until then Rider 1 has no stop.",
     };
   }
 
@@ -186,17 +186,18 @@ export function TapCloud({ id }: { id: CoachId }) {
   if (!cue || cue.id !== id) return null;
   return (
     <div className="relative mb-3">
-      <div className="rounded-[22px] bg-white px-3 py-2.5 shadow-[0_10px_28px_rgba(244,51,151,0.22)] ring-1 ring-meesho/30">
-        <p className="text-sm font-extrabold text-meesho">{cue.title}</p>
-        <p className="mt-0.5 text-xs leading-4 text-ink">{cue.detail}</p>
+      <div className="rounded-[22px] bg-[#142033] px-3 py-2.5 text-white shadow-[0_14px_32px_rgba(20,32,51,0.35)]">
+        <p className="text-[11px] font-extrabold tracking-[0.14em] text-[#ffe14a] uppercase">Tap here</p>
+        <p className="text-sm font-extrabold">{cue.title}</p>
+        <p className="mt-0.5 text-xs leading-4 text-white/80">{cue.detail}</p>
       </div>
-      <span aria-hidden className="absolute -bottom-1.5 left-8 h-3 w-3 rotate-45 bg-white ring-1 ring-meesho/30" />
+      <span aria-hidden className="absolute -bottom-1.5 left-8 h-3 w-3 rotate-45 bg-[#142033]" />
     </div>
   );
 }
 
 export function tourRing(active: boolean): string {
-  return active ? "ring-4 ring-meesho" : "";
+  return active ? "ring-4 ring-[#ffe14a] ring-offset-2" : "";
 }
 
 export function useHighlightNext(): boolean {
@@ -245,12 +246,12 @@ export function CoachCard() {
 
   return (
     <div className="relative mb-4">
-      <div className="rounded-[28px] bg-white px-4 py-4 shadow-[0_14px_36px_rgba(244,51,151,0.16)] ring-1 ring-meesho/25">
+      <div className="rounded-[28px] bg-[#142033] px-4 py-4 text-white shadow-[0_16px_40px_rgba(20,32,51,0.28)]">
         <div className="flex items-start justify-between gap-3">
-          <p className="text-xs font-extrabold tracking-wide text-meesho uppercase">
-            Step {cue.n} of {cue.total}
+          <p className="text-xs font-extrabold tracking-[0.14em] text-[#ffe14a] uppercase">
+            Tap here · step {cue.n} of {cue.total}
           </p>
-          <button type="button" onClick={tour.skip} className="shrink-0 text-sm font-extrabold text-muted">
+          <button type="button" onClick={tour.skip} className="shrink-0 text-sm font-extrabold text-white/70">
             Skip
           </button>
         </div>
@@ -260,17 +261,17 @@ export function CoachCard() {
             const now = index + 1 === cue.n && cue.id !== "done";
             return (
               <div key={label} className="min-w-0 flex-1">
-                <div className={`h-1.5 rounded-full ${done ? "bg-teal" : now ? "bg-meesho" : "bg-[#eee]"}`} />
-                <p className={`mt-1 truncate text-[10px] font-extrabold ${now ? "text-meesho" : done ? "text-teal" : "text-muted"}`}>{label}</p>
+                <div className={`h-1.5 rounded-full ${done ? "bg-[#7dffa1]" : now ? "bg-[#ffe14a]" : "bg-white/20"}`} />
+                <p className={`mt-1 truncate text-[10px] font-extrabold ${now ? "text-[#ffe14a]" : done ? "text-[#7dffa1]" : "text-white/55"}`}>{label}</p>
               </div>
             );
           })}
         </div>
         <h2 className="mt-3 text-lg leading-6 font-extrabold">{cue.title}</h2>
-        <p className="mt-1 text-sm font-bold">{cue.where}</p>
-        <p className="mt-1 text-sm leading-5 text-muted">{cue.detail}</p>
+        <p className="mt-1 text-sm font-bold text-[#ffe14a]">{cue.where}</p>
+        <p className="mt-1 text-sm leading-5 text-white/80">{cue.detail}</p>
       </div>
-      <span aria-hidden className="absolute top-10 -left-2 hidden h-4 w-4 rotate-45 bg-white ring-1 ring-meesho/25 lg:block" />
+      <span aria-hidden className="absolute top-10 -left-2 hidden h-4 w-4 rotate-45 bg-[#142033] lg:block" />
     </div>
   );
 }

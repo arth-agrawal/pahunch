@@ -100,7 +100,7 @@ function Desk({ role, children }: { role: Role; children: React.ReactNode }) {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-4 py-3">
           <MeeshoLogo />
           <div>
-            <p className="text-sm font-extrabold">{role === "hub" ? "Valmo hub" : "Pilot desk"}</p>
+            <p className="text-sm font-extrabold">{role === "hub" ? "Local hub portal" : "Pilot desk"}</p>
             <p className="text-xs text-muted">{demo.data?.nowLabel ?? "Loading the morning…"}</p>
           </div>
           <Link href={`/?order=${encodeURIComponent(demo.orderId)}`} className="text-sm font-extrabold text-meesho">
@@ -115,7 +115,7 @@ function Desk({ role, children }: { role: Role; children: React.ReactNode }) {
         <StoryRail role={role} compact />
         <div>
           {demo.error ? <Alert>{demo.error}</Alert> : null}
-          {demo.loading && !demo.data ? <p>Opening the desk…</p> : children}
+          {demo.loading && !demo.data ? <p>Opening the local hub portal…</p> : children}
         </div>
       </div>
     </div>

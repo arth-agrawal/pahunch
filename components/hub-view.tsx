@@ -55,15 +55,15 @@ export function HubView() {
   return (
     <div className="space-y-4">
       <section className="rounded-xl border border-line bg-white px-4 py-3">
-        <p className="text-xs font-extrabold tracking-wide text-meesho uppercase">Same morning as the phones</p>
-        <h1 className="text-lg font-extrabold">What leaves {selected.shipment.hubName} today</h1>
+        <p className="text-xs font-extrabold tracking-wide text-meesho uppercase">Local hub portal · {selected.shipment.hubName}</p>
+        <h1 className="text-lg font-extrabold">What leaves this hub today</h1>
         <p className="mt-1 text-sm text-muted">
-          {selected.shipment.buyerName}&apos;s {selected.shipment.itemName.toLowerCase()} is the open ticket. The other rows are the cases a desk actually gets: a later run, a bad address, a torn pack, a new buyer who never replied, a cancel after the rider already has a task.
+          {selected.shipment.buyerName}&apos;s {selected.shipment.itemName.toLowerCase()} is the open ticket. The other rows are what this portal actually gets: a later run, a bad address, a torn pack, a new buyer who never replied, a cancel after Rider 1 already has a task.
         </p>
       </section>
       <SimpleRelease selected={selected} onRun={(body) => void run(body)} error={error} />
       <details className="rounded-xl border border-line bg-white p-4">
-        <summary className="cursor-pointer text-sm font-extrabold">Everything else on this desk</summary>
+        <summary className="cursor-pointer text-sm font-extrabold">Everything else in the portal</summary>
         <div className="mt-4 space-y-4">
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Metric label="Open parcels" value={String(data.metrics.openParcels)} />
@@ -353,7 +353,7 @@ function SimpleRelease({
 
   return (
     <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-meesho/15">
-      <p className="text-xs font-extrabold tracking-wide text-meesho uppercase">One tap</p>
+      <p className="text-xs font-extrabold tracking-wide text-[#142033] uppercase">Local hub portal</p>
       <h2 className="mt-1 text-xl font-extrabold">
         {buyer}&apos;s {shipment.itemName.toLowerCase()}
       </h2>
