@@ -18,11 +18,24 @@ npm run dev
 
 Open [http://127.0.0.1:47231](http://127.0.0.1:47231).
 
-`npm run setup` creates `data/pahunch.sqlite` and seeds six fictional orders if the file is missing. `npm run dev` does that setup and then starts Next.js on port 47231. `npm run reset` deletes and reseeds only that database.
+`npm run setup` creates `data/pahunch.sqlite` and seeds the fictional orders (Saanvi in Powai, Kabir in Thane, Meera in Powai, plus three hub-only rows) if the file is missing. `npm run dev` does that setup and then starts Next.js on port 47231. `npm run reset` deletes and reseeds only that database.
 
 ```bash
 npm test
 ```
+
+## Deploy it
+
+The app needs a Node server with a writable disk for the SQLite file, so use a Node host (Railway, Render, Fly.io, a VPS), not a static host. Vercel's serverless filesystem is read-only, so the database would reset on every cold start there.
+
+```bash
+npm install
+npm run build
+npm run setup
+npm start
+```
+
+`npm start` serves on port 47231. Set `PORT` on the host to whatever it expects by editing the `start` script, or put a reverse proxy in front. Set `PAHUNCH_DB=/path/on/persistent/disk/pahunch.sqlite` if the host mounts persistent storage somewhere specific. Everyone who opens the deployed link shares one database; the **Restart from the beginning** button on the right panel resets it.
 
 ## What you can do
 
