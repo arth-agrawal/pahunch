@@ -7,11 +7,11 @@ import type { DemoState } from "@/lib/domain/dto";
 export type Role = "hub" | "customer" | "neighbour" | "rider" | "pilot";
 
 export const ROLES: Array<{ id: Role; href: string; label: string }> = [
-  { id: "hub", href: "/", label: "Hub" },
-  { id: "customer", href: "/customer", label: "Customer" },
+  { id: "customer", href: "/", label: "Buyer" },
   { id: "neighbour", href: "/neighbour", label: "Neighbour" },
+  { id: "hub", href: "/hub", label: "Hub" },
   { id: "rider", href: "/rider", label: "Rider" },
-  { id: "pilot", href: "/pilot", label: "Pilot & economics" },
+  { id: "pilot", href: "/pilot", label: "Pilot" },
 ];
 
 type ActionJson = { message?: string; shipmentId?: string; error?: string };

@@ -51,6 +51,13 @@ export function HubView() {
 
   return (
     <div className="space-y-4">
+      <section className="rounded-xl border border-line bg-white px-4 py-3">
+        <p className="text-xs font-extrabold tracking-wide text-meesho uppercase">Same morning as the phones</p>
+        <h1 className="text-lg font-extrabold">What leaves {selected.shipment.hubName} today</h1>
+        <p className="mt-1 text-sm text-muted">
+          {selected.shipment.buyerName}&apos;s {selected.shipment.itemName.toLowerCase()} is the open ticket. The other rows are the cases a desk actually gets: a later run, a bad address, a torn pack, a new buyer who never replied, a cancel after the rider already has a task.
+        </p>
+      </section>
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Metric label="Open parcels" value={String(data.metrics.openParcels)} />
         <Metric label="Needs a decision" value={String(decisions)} />

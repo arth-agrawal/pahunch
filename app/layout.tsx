@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Source_Sans_3 } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 
-const source = Source_Sans_3({
+const nunito = Nunito({
   subsets: ["latin"],
-  variable: "--font-source",
+  variable: "--font-nunito",
 });
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${source.variable} antialiased`}>{children}</body>
+      <body className={`${nunito.variable} font-sans antialiased`}>{children}</body>
     </html>
   );
 }

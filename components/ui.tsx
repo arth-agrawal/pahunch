@@ -5,10 +5,10 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variants: Record<NonNullable<ButtonProps["variant"]>, string> = {
-  primary: "bg-plum text-white hover:bg-[#3e0c3c]",
-  gold: "bg-gold text-ink hover:bg-[#e2a63d]",
-  ghost: "border border-line bg-white text-plum hover:bg-cream",
-  danger: "border border-rose bg-white text-rose hover:bg-[#fbf4f4]",
+  primary: "bg-meesho text-white hover:bg-meesho-deep",
+  gold: "bg-gold text-white hover:bg-[#e67a0a]",
+  ghost: "border border-line bg-white text-ink hover:bg-[#fafafa]",
+  danger: "border border-rose bg-white text-rose hover:bg-[#fff5f5]",
 };
 
 export function Button({ variant = "primary", className = "", ...props }: ButtonProps) {

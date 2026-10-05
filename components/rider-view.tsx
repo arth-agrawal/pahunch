@@ -1,117 +1,190 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { MeeshoLogo, ProductShot } from "@/components/brand";
 import { useDemo } from "@/components/demo-context";
-import { RoleLayout } from "@/components/role-layout";
-import { Alert, Button, Field, inputClass } from "@/components/ui";
+import { Alert } from "@/components/ui";
 import { formatINR } from "@/lib/domain/format";
 
 export function RiderView() {
   const demo = useDemo();
   const selected = demo.data?.selected;
   const [amount, setAmount] = useState("");
-  const [code, setCode] = useState("");
+  const [other, setOther] = useState(false);
+  const [digits, setDigits] = useState(["", "", "", ""]);
   const [error, setError] = useState<string | null>(null);
+  const boxes = useRef<Array<HTMLInputElement | null>>([]);
 
-  if (!demo.data || !selected) return <p>Loading the rider task…</p>;
+  if (!demo.data || !selected) return <p className="p-6">Opening today&apos;s run…</p>;
   const task = selected.currentTask ?? selected.latestTask;
   const stale = !selected.currentTask && selected.latestTask?.state === "superseded";
+  const shipment = selected.shipment;
 
   async function run(body: Record<string, unknown>) {
     setError(null);
     try {
       await demo.act(body);
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "The rider action was rejected.");
+      setError(reason instanceof Error ? reason.message : "The run rejected that.");
     }
   }
 
+  const code = digits.join("");
+
+  function setDigit(index: number, raw: string) {
+    const char = raw.replace(/\D/g, "").slice(-1);
+    setDigits((current) => current.map((item, itemIndex) => (itemIndex === index ? char : item)));
+    if (char && index < 3) boxes.current[index + 1]?.focus();
+  }
+
   return (
-    <RoleLayout
-      phone={
-        <div className="space-y-4 p-4">
-          <p className="text-sm font-semibold text-purple">Dispatch task</p>
-          <h1 className="text-2xl font-semibold text-plum">{selected.shipment.id}</h1>
-          {demo.offlineFrozen ? (
-            <p className="rounded-lg border border-rose/40 bg-white p-3 text-sm text-rose">
-              Rider link is offline. This is the last known task. Neighbour handover cannot be authorised until you reconnect.
-            </p>
-          ) : null}
-          {!task ? (
-            <p>No rider instruction has been issued. The hub keeps custody until there is a current task.</p>
-          ) : (
-            <>
-              {stale ? (
-                <p className="rounded-lg bg-cream p-3 text-sm">
-                  Task v{task.revision} is invalidated. Trying to hand it over will be rejected. Retain parcel custody.
-                </p>
-              ) : (
-                <p className="text-sm text-muted">Version {task.revision} · {task.owner} · {task.runDate}</p>
-              )}
-              <p className="text-sm">Original buyer {selected.shipment.buyerName}</p>
-              <p className="text-lg font-semibold">Receiver {task.recipientName}</p>
-              <p>{task.addressLine}</p>
-              <p className="text-sm text-muted">{task.landmark}</p>
-              <p className="text-4xl font-semibold text-plum">{formatINR(task.paymentDue)}</p>
-              <p className="text-sm">{task.paymentDue === 0 ? "Do not collect COD." : "COD due through the approved process."}</p>
-              <Button
-                variant="ghost"
-                onClick={() => void run({ action: "acknowledgeTask", shipmentId: selected.shipment.id, taskId: task.id, revision: task.revision })}
-              >
-                {task.acknowledged ? "Task opened" : "Open task"}
-              </Button>
-              {task.paymentDue > 0 ? (
-                <Field label="Amount collected" hint="Must match the due amount exactly.">
-                  <input className={inputClass} inputMode="numeric" value={amount} placeholder={String(task.paymentDue)} onChange={(event) => setAmount(event.target.value)} />
-                </Field>
-              ) : null}
-              {task.paymentDue > 0 ? (
-                <Button
-                  variant="gold"
+    <div className="flex min-h-[100dvh] flex-col bg-[#f3f3f3] lg:h-full lg:min-h-0">
+      <header className="bg-[#171717] px-4 pt-4 pb-5 text-white">
+        <div className="flex items-center justify-between">
+          <MeeshoLogo light className="text-[20px]" />
+          <span className="text-xs font-bold tracking-wide text-white/70 uppercase">Delivery partner</span>
+        </div>
+        <p className="mt-4 text-sm text-white/70">{shipment.hubName} · today&apos;s run</p>
+        <h1 className="text-2xl font-extrabold">{task ? "1 stop" : "No stop"}</h1>
+        {demo.offlineFrozen ? (
+          <p className="mt-3 rounded-md bg-[#3a1d1d] px-3 py-2 text-sm text-[#ffd0d0]">
+            No network. This is the last task saved on the phone. A neighbour handover waits until you are back online.
+          </p>
+        ) : null}
+      </header>
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3">
+        {!task ? (
+          <section className="rounded-xl bg-white p-4 text-sm">
+            <p className="font-extrabold">Nothing has been released</p>
+            <p className="mt-1 text-muted">{shipment.hubName} still has {shipment.itemName}. You do not ride for a maybe.</p>
+          </section>
+        ) : (
+          <section className="overflow-hidden rounded-xl bg-white">
+            {stale ? (
+              <p className="bg-[#fff4e8] px-4 py-3 text-sm font-bold text-[#8a4b08]">
+                This instruction is old. Keep the parcel. Handing it over will be refused.
+              </p>
+            ) : (
+              <p className="px-4 pt-3 text-xs font-bold text-muted">Instruction v{task.revision} · {task.runDate}</p>
+            )}
+            <div className="flex gap-3 px-4 py-3">
+              <ProductShot id={shipment.id} name={shipment.itemName} />
+              <div>
+                <p className="text-xs text-muted">Ordered by {shipment.buyerName}</p>
+                <p className="text-lg leading-6 font-extrabold">{task.recipientName}</p>
+                <p className="text-sm">{task.addressLine}</p>
+                <p className="text-sm text-muted">{task.landmark}</p>
+              </div>
+            </div>
+            <div className={`mx-4 mb-4 rounded-xl px-4 py-4 ${task.paymentDue === 0 ? "bg-[#eef8f1]" : "bg-[#fff6ea]"}`}>
+              <p className="text-xs font-extrabold tracking-wide uppercase">{task.paymentDue === 0 ? "Do not collect" : "Collect cash"}</p>
+              <p className={`text-4xl font-black ${task.paymentDue === 0 ? "text-teal" : "text-ink"}`}>
+                {task.paymentDue === 0 ? "₹0" : formatINR(task.paymentDue)}
+              </p>
+            </div>
+            {task.paymentDue > 0 && !other ? (
+              <div className="space-y-2 px-4 pb-4">
+                <button
+                  type="button"
+                  className="w-full rounded-md bg-gold px-3 py-3 text-sm font-extrabold text-white"
                   onClick={() =>
                     void run({
                       action: "collectCod",
-                      shipmentId: selected.shipment.id,
+                      shipmentId: shipment.id,
                       taskId: task.id,
                       revision: task.revision,
-                      amount: Number(amount || task.paymentDue),
-                      idempotencyKey: `cod-${selected.shipment.id}-${crypto.randomUUID()}`,
+                      amount: task.paymentDue,
+                      idempotencyKey: `cod-${shipment.id}-${crypto.randomUUID()}`,
                     })
                   }
                 >
-                  Record COD collection
-                </Button>
-              ) : null}
-              <Field label="Demo receipt code" hint="Ask the authorised recipient. This is not a production OTP.">
-                <input className={inputClass} value={code} onChange={(event) => setCode(event.target.value)} />
-              </Field>
-              <Button
+                  Collected {formatINR(task.paymentDue)}
+                </button>
+                <button type="button" className="w-full text-sm font-bold text-muted" onClick={() => setOther(true)}>
+                  I collected a different amount
+                </button>
+              </div>
+            ) : null}
+            {task.paymentDue > 0 && other ? (
+              <div className="space-y-2 px-4 pb-4">
+                <input
+                  inputMode="numeric"
+                  className="w-full rounded-md border border-line px-3 py-3 text-lg font-bold"
+                  placeholder="Amount in hand"
+                  value={amount}
+                  onChange={(event) => setAmount(event.target.value)}
+                />
+                <button
+                  type="button"
+                  className="w-full rounded-md bg-ink px-3 py-3 text-sm font-extrabold text-white"
+                  onClick={() =>
+                    void run({
+                      action: "collectCod",
+                      shipmentId: shipment.id,
+                      taskId: task.id,
+                      revision: task.revision,
+                      amount: Number(amount),
+                      idempotencyKey: `cod-${shipment.id}-${crypto.randomUUID()}`,
+                    })
+                  }
+                >
+                  Record this amount
+                </button>
+              </div>
+            ) : null}
+            <div className="border-t border-line px-4 py-4">
+              <p className="text-sm font-extrabold">Code from {task.recipientName.split(" ")[0]}</p>
+              <div className="mt-2 flex gap-2">
+                {[0, 1, 2, 3].map((index) => (
+                  <input
+                    key={index}
+                    ref={(node) => {
+                      boxes.current[index] = node;
+                    }}
+                    inputMode="numeric"
+                    maxLength={1}
+                    aria-label={`Code digit ${index + 1}`}
+                    className="h-14 w-12 rounded-lg border border-line text-center text-2xl font-black"
+                    value={digits[index] ?? ""}
+                    onChange={(event) => setDigit(index, event.target.value)}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                className="mt-3 w-full rounded-md bg-meesho px-3 py-3 text-sm font-extrabold text-white"
                 onClick={() =>
                   void run({
                     action: "confirmReceipt",
-                    shipmentId: selected.shipment.id,
+                    shipmentId: shipment.id,
                     taskId: task.id,
                     revision: task.revision,
                     code,
                   })
                 }
               >
-                Confirm physical handover
-              </Button>
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  ["recipient_unavailable", "Recipient unavailable"],
-                  ["payment_mismatch", "Payment mismatch"],
-                  ["address_access", "Address / access"],
-                  ["parcel_concern", "Parcel concern"],
-                ].map(([type, label]) => (
-                  <Button
+                Hand the parcel over
+              </button>
+            </div>
+            <div className="border-t border-line px-4 py-3">
+              <p className="text-xs font-extrabold text-muted uppercase">Can&apos;t complete this stop</p>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {(
+                  [
+                    ["recipient_unavailable", "Nobody here"],
+                    ["payment_mismatch", "Cash doesn't match"],
+                    ["address_access", "Can't reach the door"],
+                    ["parcel_concern", "Parcel problem"],
+                  ] as const
+                ).map(([type, label]) => (
+                  <button
                     key={type}
-                    variant="ghost"
+                    type="button"
+                    className="rounded-md border border-line px-2 py-2 text-left text-xs font-bold"
                     onClick={() =>
                       void run({
                         action: "riderException",
-                        shipmentId: selected.shipment.id,
+                        shipmentId: shipment.id,
                         taskId: task.id,
                         revision: task.revision,
                         type,
@@ -119,35 +192,36 @@ export function RiderView() {
                     }
                   >
                     {label}
-                  </Button>
+                  </button>
                 ))}
               </div>
-            </>
-          )}
-          <Button
-            variant={demo.offlineFrozen ? "gold" : "ghost"}
-            onClick={() => void run({ action: "setOffline", offline: !demo.offlineFrozen })}
+            </div>
+          </section>
+        )}
+        {shipment.phase === "delivered" ? (
+          <section className="rounded-xl bg-[#eef8f1] px-4 py-4">
+            <p className="text-lg font-extrabold text-teal">Handed to {selected.receipt?.recipientName}</p>
+            <p className="mt-1 text-sm">Payment and the physical receipt are one record. Doing it again changes nothing.</p>
+          </section>
+        ) : null}
+        {error ? <Alert>{error}</Alert> : null}
+        <button
+          type="button"
+          className="w-full rounded-md border border-line bg-white px-3 py-3 text-sm font-bold"
+          onClick={() => void run({ action: "setOffline", offline: !demo.offlineFrozen })}
+        >
+          {demo.offlineFrozen ? "Back online" : "Lose network"}
+        </button>
+        {task && !task.acknowledged ? (
+          <button
+            type="button"
+            className="w-full text-sm font-bold text-muted"
+            onClick={() => void run({ action: "acknowledgeTask", shipmentId: shipment.id, taskId: task.id, revision: task.revision })}
           >
-            {demo.offlineFrozen ? "Reconnect and refresh" : "Go offline"}
-          </Button>
-          {error ? <Alert>{error}</Alert> : null}
-          {selected.shipment.phase === "delivered" ? (
-            <p className="text-sm text-teal">Delivered to {selected.receipt?.recipientName}. Payment and receipt are reconciled once.</p>
-          ) : null}
-        </div>
-      }
-      aside={
-        <div>
-          <h2 className="text-lg font-semibold text-plum">One current instruction</h2>
-          <p className="mt-2">
-            The rider sees the approved receiver, the exact COD due and the task version. An old version cannot complete handover, including when the request is sent again after cancellation.
-          </p>
-          <p className="mt-3">Collection does not by itself mean delivered. Physical receipt is a separate server record.</p>
-          <p className="mt-3 text-muted">
-            Normal rider pay is outside this simulator. No failed-attempt bonus is awarded. If a pilot later prices extra effort, that figure is an assumed programme allowance, not a committed payout.
-          </p>
-        </div>
-      }
-    />
+            Mark this stop as opened
+          </button>
+        ) : null}
+      </div>
+    </div>
   );
 }

@@ -40,8 +40,8 @@ export function PilotView() {
   return (
     <div className="space-y-6">
       <section className="rounded-xl border border-line bg-white p-4">
-        <p className="text-sm font-semibold text-purple">A · This demo</p>
-        <h1 className="text-2xl font-semibold text-plum">Operational events from the six example orders</h1>
+        <p className="text-sm font-extrabold text-meesho">From the morning you just played</p>
+        <h1 className="text-2xl font-extrabold text-plum">What those six orders actually did</h1>
         <p className="mt-2 max-w-3xl text-sm leading-6">
           Counts use unique orders, not repeated clicks. Current nominations are the nominations still active. These six orders do not measure RTO prevention.
         </p>
