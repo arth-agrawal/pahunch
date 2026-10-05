@@ -518,11 +518,48 @@ function Simulations() {
     },
   ] as const;
 
+  async function restart() {
+    setBusy(true);
+    try {
+      await demo.act({ action: "resetDemo", confirm: true });
+    } finally {
+      window.sessionStorage.removeItem(WELCOME_KEY);
+      window.sessionStorage.removeItem("pahunch-tour");
+      // Full reload: fresh data, fresh guide, welcome card back on screen.
+      window.location.href = "/?order=PH-2401&play=neighbour";
+    }
+  }
+
   return (
     <div className="mb-4">
-      <p className="text-xs font-extrabold tracking-wide text-muted uppercase">
-        Pick a story · each one is a few taps
-      </p>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs font-extrabold tracking-wide text-muted uppercase">
+          Pick a story · each one is a few taps
+        </p>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => void restart()}
+          className="flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-xs font-extrabold text-ink hover:bg-cream disabled:opacity-50"
+          title="Reset every order, clear the guide, and reload from Saanvi's phone"
+        >
+          <svg
+            aria-hidden
+            viewBox="0 0 24 24"
+            className="h-3.5 w-3.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2.5}
+          >
+            <path
+              d="M4 12a8 8 0 1 0 2.3-5.6M4 4v5h5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          Restart from the beginning
+        </button>
+      </div>
       <div className="mt-2 grid gap-2 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
         {stories.map((story) => (
           <button
