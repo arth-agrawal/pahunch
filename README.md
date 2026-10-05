@@ -1,5 +1,28 @@
 # Pahunch
 
+<p align="center">
+  <a href="https://chamber-assumed-producers-swing.trycloudflare.com">
+    <img src="https://img.shields.io/badge/%E2%96%B6%20%20CLICK%20HERE%20TO%20OPEN%20THE%20LIVE%20MVP-f43397?style=for-the-badge&labelColor=f43397&color=f43397" alt="Click here to open the live MVP" height="48">
+  </a>
+</p>
+
+<p align="center">
+  <b>👉 <a href="https://chamber-assumed-producers-swing.trycloudflare.com">https://chamber-assumed-producers-swing.trycloudflare.com</a> 👈</b><br>
+  <sub>Live interactive prototype. No login. Follow the yellow <b>Tap here</b> bubble. Works on phone and laptop.</sub>
+</p>
+
+<!-- When you deploy, replace the URL in the two links above with your permanent one (Render / Railway / Vercel). -->
+
+<p align="center">
+  <a href="https://render.com/deploy"><img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" height="32"></a>
+  &nbsp;
+  <a href="https://railway.com/new"><img src="https://railway.com/button.svg" alt="Deploy on Railway" height="32"></a>
+  &nbsp;
+  <a href="https://vercel.com/new"><img src="https://vercel.com/button" alt="Deploy with Vercel" height="32"></a>
+</p>
+
+> **Team Pahunch · IIT Bombay · Arth Agrawal & Nandini Goyal** · Meesho DICE Challenge 3.0
+
 Pahunch is a working prototype for the Meesho DICE Challenge 3.0, Round 2. When a cash-on-delivery parcel is at the local hub, it asks whether the buyer is ready, can connect that buyer to a named neighbour who agrees independently, and gives the hub and rider one current, payment-safe instruction.
 
 It is a proposal for Valmo by Arth Agrawal and Nandini Goyal, IIT Bombay. It is not an official Meesho product.
@@ -26,34 +49,26 @@ npm test
 
 ## Deploy it
 
-The app needs a Node server with a writable disk for the SQLite file, so use a Node host (Railway, Render, Fly.io, a VPS), not a static host. Vercel's serverless filesystem is read-only, so the database would reset on every cold start there.
+The repo ships ready-made configs for three hosts. Pick one, connect this GitHub repo, and the defaults do the rest.
+
+| Host | Config in repo | Demo state | Notes |
+| --- | --- | --- | --- |
+| **Render** (recommended) | `render.yaml` | Persistent (1 GB disk) | New → Blueprint → pick the repo. Disk needs the Starter plan. |
+| **Railway** | `railway.json` | Persistent if you add a Volume | Add a volume mounted at `/data` and set `PAHUNCH_DB=/data/pahunch.sqlite`. |
+| **Vercel** | `vercel.json` | Resets on cold start | Zero config, free. The SQLite file lives in `/tmp`, so the demo reseeds itself after idle periods. Fine for judges clicking through in one sitting; not for data you want to keep. |
+
+Manual (any Node 22 host):
 
 ```bash
 npm install
 npm run build
 npm run setup
-npm start
+npm start        # honours $PORT, defaults to 47231
 ```
 
-`npm start` serves on port 47231. Set `PORT` on the host to whatever it expects by editing the `start` script, or put a reverse proxy in front. Set `PAHUNCH_DB=/path/on/persistent/disk/pahunch.sqlite` if the host mounts persistent storage somewhere specific. Everyone who opens the deployed link shares one database; the **Restart from the beginning** button on the right panel resets it.
+Set `PAHUNCH_DB=/path/on/persistent/disk/pahunch.sqlite` if the host mounts storage somewhere specific. Everyone who opens the deployed link shares one database; the **Restart from the beginning** button on the right panel resets it.
 
-## What you can do
-
-- Hub queue with a derived next action, approval checklist, route scenario, shadow-mode profiles and an event timeline.
-- Customer delivery update: receive today, request a later run, nominate a neighbour, correct an address, or cancel.
-- A separate neighbour screen for receive consent and, on the COD lane, payment consent.
-- Platform payment simulator that writes a server confirmation. Rider COD due then becomes ₹0.
-- Neighbour COD lane: the rider collects the exact due, then records a physical receipt with the demo code.
-- Cancellation, stale tasks, offline rejection, route caps, PIN repair and parcel inspection.
-- Pilot metrics from persisted orders, the proposed matched-hub design, and the case calculator.
-
-The role switcher is demo navigation, not authentication. The receipt code is a walkthrough aid, not a production OTP.
-
-## Boundaries
-
-Fictional orders and a local state machine. No Meesho, Valmo, SMS, payment gateway, geocoder or rider-app connection. No shopping catalogue, marketplace, chatbot or new fraud model.
-
-SQLite is a file on the machine running the Node server. A static host cannot serve this backend. A Node host with a persistent disk can. The source repository and a deployed app are separate steps, and deployment was not done from this session.
+After deploying, paste the new URL into the two **Open the live MVP** links at the top of this file.
 
 ## Calculations
 

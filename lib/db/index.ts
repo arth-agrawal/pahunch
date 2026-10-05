@@ -4,8 +4,24 @@ import Database from "better-sqlite3";
 import { migrate } from "./schema";
 import { seedDatabase } from "./seed";
 
+/**
+ * Where the SQLite file lives when PAHUNCH_DB is not set.
+ * Serverless hosts (Vercel, Netlify, Lambda) mount the project read-only and only
+ * allow writes under /tmp, so fall back there instead of crashing with EROFS.
+ * State on those hosts resets on cold start; a host with a disk keeps it.
+ */
 export function defaultDbPath(): string {
-  return path.join(process.cwd(), "data", "pahunch.sqlite");
+  const local = path.join(process.cwd(), "data", "pahunch.sqlite");
+  if (process.env.VERCEL || process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return path.join("/tmp", "pahunch.sqlite");
+  }
+  try {
+    fs.mkdirSync(path.dirname(local), { recursive: true });
+    fs.accessSync(path.dirname(local), fs.constants.W_OK);
+    return local;
+  } catch {
+    return path.join("/tmp", "pahunch.sqlite");
+  }
 }
 
 let singleton: Database.Database | null = null;

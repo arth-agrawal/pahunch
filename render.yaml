@@ -1,0 +1,19 @@
+# One-click deploy on Render: https://render.com/deploy?repo=<your GitHub repo URL>
+# A persistent disk keeps the SQLite demo database across restarts.
+services:
+  - type: web
+    name: pahunch
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: npm run setup && npm start
+    healthCheckPath: /api/state?order=PH-2401
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: PAHUNCH_DB
+        value: /var/data/pahunch.sqlite
+    disk:
+      name: pahunch-data
+      mountPath: /var/data
+      sizeGB: 1

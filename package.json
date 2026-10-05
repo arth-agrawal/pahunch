@@ -6,7 +6,7 @@
     "setup": "tsx lib/db/setup.ts",
     "dev": "tsx lib/db/setup.ts && next dev --turbopack -H 0.0.0.0 -p 47231",
     "build": "next build",
-    "start": "next start -H 0.0.0.0 -p 47231",
+    "start": "next start -H 0.0.0.0 -p ${PORT:-47231}",
     "lint": "eslint",
     "test": "vitest run",
     "reset": "tsx lib/db/setup.ts --reset"
