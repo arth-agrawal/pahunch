@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-plum: #541151;
+  --color-purple: #9453a6;
+  --color-cream: #fff5dc;
+  --color-canvas: #f7f5f8;
+  --color-gold: #f9b94e;
+  --color-ink: #241826;
+  --color-muted: #5c5164;
+  --color-line: #e4dce8;
+  --color-teal: #1f7a6b;
+  --color-rose: #8e3b3b;
+  --font-sans: var(--font-source), "Segoe UI", sans-serif;
+}
+
+body {
+  background: #f7f5f8;
+  color: #241826;
+  font-family: var(--font-source), "Segoe UI", sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid #541151;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
