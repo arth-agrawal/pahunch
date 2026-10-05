@@ -584,15 +584,93 @@ function Simulations() {
   );
 }
 
+const AUTO_OPEN_SECONDS = 5;
+
+/**
+ * The pink button that moves you to the next screen. While the guide is on it also
+ * counts down and opens that screen by itself, so nobody has to hunt for the next tap.
+ */
 function NextHandoff({ href, label }: { href: string; label: string }) {
   const pulse = useHighlightNext();
+  const router = useRouter();
+  const [left, setLeft] = useState(AUTO_OPEN_SECONDS);
+  const [stay, setStay] = useState(false);
+
+  useEffect(() => {
+    setLeft(AUTO_OPEN_SECONDS);
+    setStay(false);
+  }, [href]);
+
+  useEffect(() => {
+    if (!pulse || stay) return;
+    if (left <= 0) {
+      router.push(href);
+      return;
+    }
+    const timer = window.setTimeout(() => setLeft((n) => n - 1), 1000);
+    return () => window.clearTimeout(timer);
+  }, [pulse, stay, left, href, router]);
+
   return (
-    <Link
-      href={href}
-      className={`mt-4 flex min-h-11 items-center justify-center rounded-md bg-meesho px-3 text-center text-sm font-extrabold text-white ${tourRing(pulse)}`}
-    >
-      {label}
-    </Link>
+    <div className="mt-4">
+      {pulse ? (
+        <div className="relative mb-3" role="status">
+          <div className="rounded-[22px] border-2 border-[#ffe14a] bg-[#142033] px-3 py-2.5 text-white shadow-[0_14px_32px_rgba(20,32,51,0.4)]">
+            <div className="flex items-center gap-2">
+              <svg
+                aria-hidden
+                viewBox="0 0 24 24"
+                className="tap-nudge h-5 w-5 shrink-0 text-[#ffe14a]"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={3}
+              >
+                <path
+                  d="M12 4v14M6 12l6 7 6-7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <div className="min-w-0">
+                <p className="text-[11px] font-extrabold tracking-[0.14em] text-[#ffe14a] uppercase">
+                  Tap here · next screen
+                </p>
+                <p className="text-sm font-extrabold">{label}</p>
+              </div>
+            </div>
+            <p className="mt-1 text-xs leading-4 text-white/85">
+              {stay
+                ? "Take your time. Tap the pink button when you are ready."
+                : `The next tap is on a different phone. Opening it for you in ${left}s, or tap now.`}
+            </p>
+            {!stay ? (
+              <button
+                type="button"
+                onClick={() => setStay(true)}
+                className="mt-1 text-xs font-extrabold text-[#ffe14a] underline underline-offset-2"
+              >
+                Stay here, I am still reading
+              </button>
+            ) : null}
+          </div>
+          <span
+            aria-hidden
+            className="absolute -bottom-[7px] left-8 h-3.5 w-3.5 rotate-45 border-r-2 border-b-2 border-[#ffe14a] bg-[#142033]"
+          />
+        </div>
+      ) : null}
+      <Link
+        href={href}
+        className={`flex min-h-11 items-center justify-center rounded-md bg-meesho px-3 text-center text-sm font-extrabold text-white ${tourRing(pulse)}`}
+      >
+        {label}
+        {pulse && !stay ? (
+          <span className="ml-2 rounded-full bg-white/20 px-2 py-0.5 text-xs">
+            {left}s
+          </span>
+        ) : null}
+      </Link>
+    </div>
   );
 }
 
