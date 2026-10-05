@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { MeeshoLogo, ProductShot } from "@/components/brand";
+import { tourRing, useHighlight } from "@/components/coach";
 import { useDemo } from "@/components/demo-context";
 import { Alert } from "@/components/ui";
 import { formatINR } from "@/lib/domain/format";
@@ -13,6 +14,8 @@ export function RiderView() {
   const [other, setOther] = useState(false);
   const [digits, setDigits] = useState(["", "", "", ""]);
   const [error, setError] = useState<string | null>(null);
+  const pulseCollect = useHighlight("collect");
+  const pulseHandover = useHighlight("handover");
   const boxes = useRef<Array<HTMLInputElement | null>>([]);
 
   if (!demo.data || !selected) return <p className="p-6">Opening today&apos;s run…</p>;
@@ -86,7 +89,7 @@ export function RiderView() {
               <div className="space-y-2 px-4 pb-4">
                 <button
                   type="button"
-                  className="w-full rounded-md bg-gold px-3 py-3 text-sm font-extrabold text-white"
+                  className={`w-full rounded-md bg-gold px-3 py-3 text-sm font-extrabold text-white ${tourRing(pulseCollect)}`}
                   onClick={() =>
                     void run({
                       action: "collectCod",
@@ -152,7 +155,7 @@ export function RiderView() {
               </div>
               <button
                 type="button"
-                className="mt-3 w-full rounded-md bg-meesho px-3 py-3 text-sm font-extrabold text-white"
+                className={`mt-3 w-full rounded-md bg-meesho px-3 py-3 text-sm font-extrabold text-white ${tourRing(pulseHandover)}`}
                 onClick={() =>
                   void run({
                     action: "confirmReceipt",

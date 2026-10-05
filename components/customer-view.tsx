@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { MeeshoScreen, OrdersTabBar, ProductShot } from "@/components/brand";
+import { tourRing, useHighlight } from "@/components/coach";
 import { useDemo } from "@/components/demo-context";
 import { Alert, Button, inputClass } from "@/components/ui";
 import { formatINR } from "@/lib/domain/format";
@@ -40,6 +41,8 @@ export function CustomerView() {
     // Reset the form when the order or the saved answer changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shipmentId, readinessId]);
+
+  const pulseSave = useHighlight("save");
 
   if (!demo.data || !selected) return <p className="p-6">Opening your orders…</p>;
 
@@ -107,7 +110,7 @@ export function CustomerView() {
       onBack={screen === "detail" ? () => setScreen("orders") : undefined}
       footer={
         screen === "detail" && showForm ? (
-          <Button className="w-full rounded-md py-3 text-base" variant={choice === "cancel" ? "danger" : "primary"} onClick={() => void submit()}>
+          <Button className={`w-full rounded-md py-3 text-base ${tourRing(pulseSave)}`} variant={choice === "cancel" ? "danger" : "primary"} onClick={() => void submit()}>
             {choice === "cancel" ? "Cancel this order" : "Save"}
           </Button>
         ) : null

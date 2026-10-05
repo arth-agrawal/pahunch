@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MeeshoScreen, ProductShot } from "@/components/brand";
+import { tourRing, useHighlight } from "@/components/coach";
 import { useDemo } from "@/components/demo-context";
 import { Alert } from "@/components/ui";
 import { formatINR } from "@/lib/domain/format";
@@ -11,6 +12,7 @@ export function NeighbourView() {
   const demo = useDemo();
   const selected = demo.data?.selected;
   const [error, setError] = useState<string | null>(null);
+  const pulseYes = useHighlight("yes-pay");
 
   if (!demo.data || !selected) return <p className="p-6">Opening the request…</p>;
   const nomination = selected.nomination;
@@ -105,7 +107,7 @@ export function NeighbourView() {
                 {nomination.payerArrangement === "neighbour_cod" ? (
                   <button
                     type="button"
-                    className="w-full rounded-md bg-meesho px-3 py-3 text-sm font-extrabold text-white"
+                    className={`w-full rounded-md bg-meesho px-3 py-3 text-sm font-extrabold text-white ${tourRing(pulseYes)}`}
                     onClick={() => void respond("accept_receive_and_pay")}
                   >
                     Yes, I&apos;ll take it and pay {formatINR(nomination.agreedAmount)}
@@ -113,7 +115,7 @@ export function NeighbourView() {
                 ) : (
                   <button
                     type="button"
-                    className="w-full rounded-md bg-meesho px-3 py-3 text-sm font-extrabold text-white"
+                    className={`w-full rounded-md bg-meesho px-3 py-3 text-sm font-extrabold text-white ${tourRing(pulseYes)}`}
                     onClick={() => void respond("accept_receive")}
                   >
                     Yes, I&apos;ll take it. I will not pay the rider.

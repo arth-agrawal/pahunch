@@ -24,6 +24,7 @@ type DemoController = {
   loading: boolean;
   error: string | null;
   notice: string | null;
+  clearNotice: () => void;
   offlineFrozen: boolean;
   act: (body: Record<string, unknown>) => Promise<ActionJson>;
   reload: () => Promise<void>;
@@ -46,6 +47,7 @@ export function DemoProvider({ role, children }: { role: Role; children: React.R
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const clearNotice = useCallback(() => setNotice(null), []);
   const [offlineFrozen, setOfflineFrozen] = useState(false);
 
   const setOrderId = useCallback(
@@ -129,7 +131,21 @@ export function DemoProvider({ role, children }: { role: Role; children: React.R
   );
 
   return (
-    <DemoContext.Provider value={{ role, orderId, setOrderId, data, loading, error, notice, offlineFrozen, act, reload }}>
+    <DemoContext.Provider
+      value={{
+        role,
+        orderId,
+        setOrderId,
+        data,
+        loading,
+        error,
+        notice,
+        clearNotice,
+        offlineFrozen,
+        act,
+        reload,
+      }}
+    >
       {children}
     </DemoContext.Provider>
   );

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MeeshoLogo } from "@/components/brand";
+import { CoachCard, TourProvider, tourRing, useHighlightNext } from "@/components/coach";
 import { DemoProvider, useDemo, type Role } from "@/components/demo-context";
 import { continueStory, holdingLine, storyBeats } from "@/components/story";
 import { Alert, Button } from "@/components/ui";
@@ -11,7 +12,9 @@ import { formatINR } from "@/lib/domain/format";
 export function Shell({ role, children }: { role: Role; children: React.ReactNode }) {
   return (
     <DemoProvider role={role}>
-      {role === "hub" || role === "pilot" ? <Desk role={role}>{children}</Desk> : <PhoneStage role={role}>{children}</PhoneStage>}
+      <TourProvider>
+        {role === "hub" || role === "pilot" ? <Desk role={role}>{children}</Desk> : <PhoneStage role={role}>{children}</PhoneStage>}
+      </TourProvider>
     </DemoProvider>
   );
 }
@@ -21,24 +24,26 @@ function PhoneStage({ role, children }: { role: Role; children: React.ReactNode 
   const time = demo.data?.nowLabel.match(/\d{2}:\d{2}/)?.[0] ?? "09:30";
 
   return (
-    <div className="min-h-screen bg-[#e6e6e6] lg:grid lg:grid-cols-[minmax(0,440px)_minmax(320px,1fr)] lg:items-start lg:gap-8 lg:px-8 lg:py-8">
-      <div>
-        <div className="relative mx-auto w-full max-w-[430px] bg-white lg:overflow-hidden lg:rounded-[36px] lg:bg-black lg:p-2.5 lg:shadow-[0_24px_60px_rgba(0,0,0,0.28)]">
-          <div className="hidden items-center justify-between px-5 pt-1 pb-1 text-[11px] font-bold text-white lg:flex">
-            <span>{time}</span>
-            <span className="h-4 w-24 rounded-full bg-black" />
-            <span>LTE</span>
+    <div className="min-h-screen bg-[#e4e4e4]">
+      <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-4 px-3 py-3 lg:flex-row lg:items-start lg:gap-8 lg:px-6 lg:py-6">
+        <div className="order-2 mx-auto w-full max-w-[390px] shrink-0 lg:order-1 lg:mx-0">
+          <div className="bg-white lg:rounded-[42px] lg:bg-[#111] lg:p-3 lg:shadow-[0_28px_70px_rgba(0,0,0,0.28)]">
+            <div className="hidden items-center justify-between px-6 pt-1 text-[12px] font-bold text-white lg:flex">
+              <span>{time}</span>
+              <span className="h-[22px] w-[96px] rounded-full bg-black" />
+              <span className="tracking-wide">LTE</span>
+            </div>
+            <div className="overflow-hidden bg-white lg:mt-1 lg:h-[min(740px,calc(100vh-6.5rem))] lg:rounded-[30px]">
+              {demo.loading && !demo.data ? <p className="p-6 text-sm">Opening Meesho…</p> : children}
+            </div>
+            <div className="hidden justify-center py-2 lg:flex">
+              <span className="h-1 w-28 rounded-full bg-white/80" />
+            </div>
           </div>
-          <div className="h-full overflow-hidden bg-white lg:h-[760px] lg:rounded-[26px]">
-            {demo.loading && !demo.data ? <p className="p-6 text-sm">Opening Meesho…</p> : children}
-          </div>
-          {demo.notice ? (
-            <p className="absolute right-4 bottom-4 left-4 z-10 rounded-md bg-[#1c1c1c] px-3 py-2 text-sm font-bold text-white lg:bottom-8">{demo.notice}</p>
-          ) : null}
         </div>
-      </div>
-      <div>
-        <StoryRail role={role} />
+        <div className="order-1 min-w-0 flex-1 lg:order-2 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
+          <StoryRail role={role} />
+        </div>
       </div>
     </div>
   );
@@ -77,7 +82,14 @@ function Desk({ role, children }: { role: Role; children: React.ReactNode }) {
 function StoryRail({ role, compact = false }: { role: Role; compact?: boolean }) {
   const demo = useDemo();
   const selected = demo.data?.selected;
+  const { notice, clearNotice } = demo;
   const [about, setAbout] = useState(false);
+
+  useEffect(() => {
+    if (!notice) return;
+    const timer = window.setTimeout(() => clearNotice(), 4500);
+    return () => window.clearTimeout(timer);
+  }, [notice, clearNotice]);
   const [resetOpen, setResetOpen] = useState(false);
   const [resetError, setResetError] = useState<string | null>(null);
 
@@ -90,7 +102,16 @@ function StoryRail({ role, compact = false }: { role: Role; compact?: boolean })
   const buyer = selected.shipment.buyerName.split(" ")[0];
 
   return (
-    <aside className={`bg-white lg:rounded-2xl lg:p-5 ${compact ? "rounded-2xl p-4" : "px-4 py-4 lg:sticky lg:top-6"}`}>
+    <aside className={`bg-white lg:rounded-2xl lg:p-5 ${compact ? "rounded-2xl p-4" : "px-4 py-4"}`}>
+      <CoachCard />
+      {notice ? (
+        <div className="mb-4 flex items-start gap-3 rounded-xl border border-line bg-[#f7f7f7] px-3 py-3 text-sm leading-5">
+          <p className="min-w-0 flex-1">{notice}</p>
+          <button type="button" onClick={demo.clearNotice} className="shrink-0 font-extrabold text-muted">
+            Close
+          </button>
+        </div>
+      ) : null}
       <p className="text-xs font-extrabold tracking-wide text-meesho uppercase">
         {demo.data.nowLabel.replace(", ", " · ").replace(" IST", "")} · {selected.shipment.hubName}
       </p>
@@ -131,9 +152,7 @@ function StoryRail({ role, compact = false }: { role: Role; compact?: boolean })
         })}
       </ol>
       {next ? (
-        <Link href={next.href} className="mt-4 flex min-h-11 items-center justify-center rounded-md bg-meesho px-3 text-sm font-extrabold text-white">
-          {next.label}
-        </Link>
+        <NextHandoff href={next.href} label={next.label} />
       ) : (
         <p className="mt-4 rounded-md bg-[#f6f6f6] px-3 py-2 text-sm">The next tap is on this screen.</p>
       )}
@@ -216,6 +235,18 @@ function StoryRail({ role, compact = false }: { role: Role; compact?: boolean })
         </div>
       ) : null}
     </aside>
+  );
+}
+
+function NextHandoff({ href, label }: { href: string; label: string }) {
+  const pulse = useHighlightNext();
+  return (
+    <Link
+      href={href}
+      className={`mt-4 flex min-h-11 items-center justify-center rounded-md bg-meesho px-3 text-center text-sm font-extrabold text-white ${tourRing(pulse)}`}
+    >
+      {label}
+    </Link>
   );
 }
 

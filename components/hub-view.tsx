@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { tourRing, useHighlight } from "@/components/coach";
 import { useDemo } from "@/components/demo-context";
 import { Alert, Button, Field, inputClass } from "@/components/ui";
 import { CountBar, Lifecycle, RouteDiagram, Timeline } from "@/components/visuals";
@@ -28,6 +29,7 @@ export function HubView() {
   const [repairNote, setRepairNote] = useState("Caller confirmed the Dewas locality. Manual hub note only.");
   const [parcelNote, setParcelNote] = useState("Outer pack inspected at the hub.");
   const [cause, setCause] = useState("supplier");
+  const pulseApprove = useHighlight("approve");
   const data = demo.data;
   const selected = data?.selected ?? null;
 
@@ -164,7 +166,7 @@ export function HubView() {
           </div>
           {error ? <Alert>{error}</Alert> : null}
           <div className="flex flex-col gap-2">
-            <Button onClick={() => void run({ action: "approveNeighbour", shipmentId: selected.shipment.id })}>
+            <Button className={tourRing(pulseApprove)} onClick={() => void run({ action: "approveNeighbour", shipmentId: selected.shipment.id })}>
               Approve neighbour dispatch
             </Button>
             {!selected.checksPass ? <p className="text-sm text-muted">Approval stays blocked until every applicable check passes. The server enforces the same list.</p> : null}
