@@ -1,27 +1,41 @@
-# Pahunch
+<h1 align="center">Pahunch</h1>
+
+<p align="center"><b>Before the rider leaves the hub, ask the buyer one question. Then let a neighbour say yes on their own phone.</b><br>
+A new step on top of a Meesho cash-on-delivery order, built for Valmo. Meesho DICE Challenge 3.0.</p>
 
 <p align="center">
-  <a href="https://chamber-assumed-producers-swing.trycloudflare.com">
-    <img src="https://img.shields.io/badge/%E2%96%B6%20%20CLICK%20HERE%20TO%20OPEN%20THE%20LIVE%20MVP-f43397?style=for-the-badge&labelColor=f43397&color=f43397" alt="Click here to open the live MVP" height="48">
+  <a href="https://pahunch-gamma.vercel.app">
+    <img src="https://img.shields.io/badge/%E2%96%B6%20%20%20CLICK%20HERE%20%E2%80%94%20OPEN%20THE%20LIVE%20MVP%20%20%20-f43397?style=for-the-badge" alt="Click here to open the live MVP" height="52">
   </a>
 </p>
 
-<p align="center">
-  <b>👉 <a href="https://chamber-assumed-producers-swing.trycloudflare.com">https://chamber-assumed-producers-swing.trycloudflare.com</a> 👈</b><br>
-  <sub>Live interactive prototype. No login. Follow the yellow <b>Tap here</b> bubble. Works on phone and laptop.</sub>
-</p>
+<h3 align="center">👉 <a href="https://pahunch-gamma.vercel.app">pahunch-gamma.vercel.app</a> 👈</h3>
 
-<!-- When you deploy, replace the URL in the two links above with your permanent one (Render / Railway / Vercel). -->
+<p align="center"><sub>No login. 5 taps. Works on phone and laptop. A yellow <b>Tap here</b> bubble shows you every click.</sub></p>
 
 <p align="center">
-  <a href="https://render.com/deploy"><img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" height="32"></a>
-  &nbsp;
-  <a href="https://railway.com/new"><img src="https://railway.com/button.svg" alt="Deploy on Railway" height="32"></a>
-  &nbsp;
-  <a href="https://vercel.com/new"><img src="https://vercel.com/button" alt="Deploy with Vercel" height="32"></a>
+  <a href="https://pahunch-gamma.vercel.app?order=PH-2401&play=neighbour"><img src="https://img.shields.io/badge/Story%201-Someone%20nearby%20takes%20it-142033?style=flat-square&labelColor=142033&color=ffe14a" alt="Story 1"></a>
+  <a href="https://pahunch-gamma.vercel.app?order=PH-2401&play=tomorrow"><img src="https://img.shields.io/badge/Story%202-Send%20it%20tomorrow-142033?style=flat-square&labelColor=142033&color=ffe14a" alt="Story 2"></a>
+  <a href="https://pahunch-gamma.vercel.app?order=PH-2401&play=home"><img src="https://img.shields.io/badge/Story%203-Saanvi%20is%20home-142033?style=flat-square&labelColor=142033&color=ffe14a" alt="Story 3"></a>
 </p>
 
-> **Team Pahunch · IIT Bombay · Arth Agrawal & Nandini Goyal** · Meesho DICE Challenge 3.0
+<p align="center">
+  <a href="https://pahunch-gamma.vercel.app"><img src="docs/images/demo-neighbour-story.png" alt="Saanvi's Meesho order on the left, the guided story rail on the right" width="860"></a>
+</p>
+
+<p align="center"><b>Team Pahunch · IIT Bombay · Arth Agrawal &amp; Nandini Goyal</b></p>
+
+<p align="center">
+  <a href="https://vercel.com/new"><img src="https://vercel.com/button" alt="Deploy with Vercel" height="30"></a>
+  &nbsp;
+  <a href="https://render.com/deploy"><img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" height="30"></a>
+  &nbsp;
+  <a href="https://railway.com/new"><img src="https://railway.com/button.svg" alt="Deploy on Railway" height="30"></a>
+</p>
+
+---
+
+## What you are looking at
 
 Pahunch is a working prototype for the Meesho DICE Challenge 3.0, Round 2. When a cash-on-delivery parcel is at the local hub, it asks whether the buyer is ready, can connect that buyer to a named neighbour who agrees independently, and gives the hub and rider one current, payment-safe instruction.
 
@@ -47,6 +61,17 @@ Open [http://127.0.0.1:47231](http://127.0.0.1:47231).
 npm test
 ```
 
+## Put it on your GitHub in one go
+
+From a machine with this folder:
+
+```bash
+./scripts/publish-github.sh            # creates github.com/<you>/pahunch and pushes (needs GitHub CLI)
+./scripts/publish-github.sh https://github.com/<you>/<empty-repo>.git   # or push to a repo you made
+```
+
+Then connect that repo at [vercel.com/new](https://vercel.com/new) so every push redeploys the live MVP.
+
 ## Deploy it
 
 The repo ships ready-made configs for three hosts. Pick one, connect this GitHub repo, and the defaults do the rest.
@@ -55,7 +80,7 @@ The repo ships ready-made configs for three hosts. Pick one, connect this GitHub
 | --- | --- | --- | --- |
 | **Render** (recommended) | `render.yaml` | Persistent (1 GB disk) | New → Blueprint → pick the repo. Disk needs the Starter plan. |
 | **Railway** | `railway.json` | Persistent if you add a Volume | Add a volume mounted at `/data` and set `PAHUNCH_DB=/data/pahunch.sqlite`. |
-| **Vercel** | `vercel.json` | Resets on cold start | Zero config, free. The SQLite file lives in `/tmp`, so the demo reseeds itself after idle periods. Fine for judges clicking through in one sitting; not for data you want to keep. |
+| **Vercel** (live MVP) | none needed | Resets on cold start | Zero config, free, Node 22 preset. The SQLite file lives in `/tmp`, so the demo reseeds itself after idle periods. Fine for judges clicking through in one sitting; not for data you want to keep. |
 
 Manual (any Node 22 host):
 
@@ -68,7 +93,7 @@ npm start        # honours $PORT, defaults to 47231
 
 Set `PAHUNCH_DB=/path/on/persistent/disk/pahunch.sqlite` if the host mounts storage somewhere specific. Everyone who opens the deployed link shares one database; the **Restart from the beginning** button on the right panel resets it.
 
-After deploying, paste the new URL into the two **Open the live MVP** links at the top of this file.
+The live MVP is on Vercel at https://pahunch-gamma.vercel.app. If you redeploy elsewhere, update the links at the top of this file.
 
 ## Calculations
 
