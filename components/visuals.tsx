@@ -215,7 +215,7 @@ export function BreakEvenChart({
   const x = (value: number) => pad + (value / maxX) * (width - pad * 2);
   const y = (value: number) => height - pad - ((value - minY) / (maxY - minY)) * (height - pad * 2);
   const line = samples.map((count, index) => `${index === 0 ? "M" : "L"} ${x(count)} ${y(nets[index] ?? 0)}`).join(" ");
-  const markers = [600, 834, 1200, prevented];
+  const markers = Array.from(new Set([600, 834, 1200, prevented]));
   return (
     <svg viewBox={`0 0 ${width} ${height}`} role="img" className="h-auto w-full" aria-label="Break-even chart of additional final RTOs prevented versus modelled net saving">
       <line x1={pad} y1={y(0)} x2={width - pad} y2={y(0)} stroke="#E4DCE8" />
