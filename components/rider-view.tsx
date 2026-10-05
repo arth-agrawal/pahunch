@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { MeeshoLogo, ProductShot } from "@/components/brand";
-import { tourRing, useHighlight } from "@/components/coach";
+import { TapCloud, tourRing, useHighlight } from "@/components/coach";
 import { useDemo } from "@/components/demo-context";
 import { Alert } from "@/components/ui";
 import { formatINR } from "@/lib/domain/format";
@@ -22,6 +22,8 @@ export function RiderView() {
   const task = selected.currentTask ?? selected.latestTask;
   const stale = !selected.currentTask && selected.latestTask?.state === "superseded";
   const shipment = selected.shipment;
+  const collected = selected.payments.some((payment) => payment.channel === "cod_collection");
+  const needCash = Boolean(task && task.paymentDue > 0 && !collected && !stale);
 
   async function run(body: Record<string, unknown>) {
     setError(null);
@@ -85,8 +87,9 @@ export function RiderView() {
                 {task.paymentDue === 0 ? "₹0" : formatINR(task.paymentDue)}
               </p>
             </div>
-            {task.paymentDue > 0 && !other ? (
+            {needCash && !other ? (
               <div className="space-y-2 px-4 pb-4">
+                <TapCloud id="collect" />
                 <button
                   type="button"
                   className={`w-full rounded-md bg-gold px-3 py-3 text-sm font-extrabold text-white ${tourRing(pulseCollect)}`}
@@ -108,7 +111,7 @@ export function RiderView() {
                 </button>
               </div>
             ) : null}
-            {task.paymentDue > 0 && other ? (
+            {needCash && other ? (
               <div className="space-y-2 px-4 pb-4">
                 <input
                   inputMode="numeric"
@@ -135,7 +138,9 @@ export function RiderView() {
                 </button>
               </div>
             ) : null}
+            {!needCash && !stale ? (
             <div className="border-t border-line px-4 py-4">
+              <TapCloud id="handover" />
               <p className="text-sm font-extrabold">Code from {task.recipientName.split(" ")[0]}</p>
               <div className="mt-2 flex gap-2">
                 {[0, 1, 2, 3].map((index) => (
@@ -169,8 +174,9 @@ export function RiderView() {
                 Hand the parcel over
               </button>
             </div>
-            <div className="border-t border-line px-4 py-3">
-              <p className="text-xs font-extrabold text-muted uppercase">Can&apos;t complete this stop</p>
+            ) : null}
+            <details className="border-t border-line px-4 py-3">
+              <summary className="cursor-pointer text-xs font-extrabold text-muted">If this stop goes wrong</summary>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 {(
                   [
@@ -198,7 +204,7 @@ export function RiderView() {
                   </button>
                 ))}
               </div>
-            </div>
+            </details>
           </section>
         )}
         {shipment.phase === "delivered" ? (

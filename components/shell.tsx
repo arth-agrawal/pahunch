@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MeeshoLogo } from "@/components/brand";
 import { CoachCard, TourProvider, tourRing, useHighlightNext } from "@/components/coach";
@@ -103,6 +104,7 @@ function StoryRail({ role, compact = false }: { role: Role; compact?: boolean })
 
   return (
     <aside className={`bg-white lg:rounded-2xl lg:p-5 ${compact ? "rounded-2xl p-4" : "px-4 py-4"}`}>
+      <Simulations />
       <CoachCard />
       {notice ? (
         <div className="mb-4 flex items-start gap-3 rounded-xl border border-line bg-[#f7f7f7] px-3 py-3 text-sm leading-5">
@@ -158,7 +160,7 @@ function StoryRail({ role, compact = false }: { role: Role; compact?: boolean })
       )}
       {role === "customer" && selected.shipment.id === "PH-2401" ? (
         <p className="mt-3 text-sm leading-5 text-muted">
-          Asha is at the flour mill. Riya is in House 18, one lane over. The hop is 40 metres and about a minute.
+          Saanvi is at the flour mill. Riya is in House 18, one lane over. The hop is 40 metres and about a minute.
         </p>
       ) : null}
       <div className="mt-5 border-t border-line pt-4">
@@ -235,6 +237,51 @@ function StoryRail({ role, compact = false }: { role: Role; compact?: boolean })
         </div>
       ) : null}
     </aside>
+  );
+}
+
+function Simulations() {
+  const demo = useDemo();
+  const router = useRouter();
+  const play = useSearchParams().get("play") ?? "neighbour";
+  const [busy, setBusy] = useState(false);
+
+  async function start(next: "neighbour" | "tomorrow" | "home") {
+    setBusy(true);
+    try {
+      await demo.act({ action: "applyScenario", scenario: "neighbour_cod" });
+      router.push(`/?order=PH-2401&play=${next}`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const stories = [
+    { id: "neighbour", title: "Riya takes it", detail: "Saanvi names her. Riya pays ₹299." },
+    { id: "tomorrow", title: "Send it tomorrow", detail: "The hub confirms. Nobody rides today." },
+    { id: "home", title: "Saanvi is home", detail: "Same address. She pays the rider." },
+  ] as const;
+
+  return (
+    <div className="mb-4">
+      <p className="text-xs font-extrabold tracking-wide text-muted uppercase">Three stories</p>
+      <div className="mt-2 grid gap-2 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+        {stories.map((story) => (
+          <button
+            key={story.id}
+            type="button"
+            disabled={busy}
+            onClick={() => void start(story.id)}
+            className={`rounded-2xl px-3 py-2 text-left disabled:opacity-50 ${
+              play === story.id ? "bg-cream ring-1 ring-meesho" : "bg-[#f6f6f6] hover:bg-white"
+            }`}
+          >
+            <span className="block text-sm font-extrabold">{story.title}</span>
+            <span className="block text-xs leading-4 text-muted">{story.detail}</span>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 

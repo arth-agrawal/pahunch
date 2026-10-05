@@ -28,7 +28,7 @@ export const PROFILES = [
   {
     id: "buyer-asha",
     kind: "buyer",
-    name: "Asha Verma",
+    name: "Saanvi Verma",
     windowLabel: "Jan–Aug 2026 closed orders",
     accepted: 8,
     buyerRefusals: 2,
@@ -134,7 +134,7 @@ export const PROFILES = [
 export const SHIPMENTS: ShipmentSeed[] = [
   {
     id: "PH-2401",
-    buyerName: "Asha Verma",
+    buyerName: "Saanvi Verma",
     itemName: "Cotton kurta set",
     sku: "KURTA-14",
     amount: 299,

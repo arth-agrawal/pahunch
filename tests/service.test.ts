@@ -230,7 +230,7 @@ describe("controls", () => {
     codPath(database);
     neighbourRespond(database, { shipmentId: "PH-2401", decision: "decline" });
     const restored = restoreNormal(database, { shipmentId: "PH-2401" });
-    expect(restored.message).toMatch(/Asha Verma/);
+    expect(restored.message).toMatch(/Saanvi Verma/);
     expect(getDemoState(database, "PH-2401").selected?.currentTask?.recipientRole).toBe("buyer");
   });
 

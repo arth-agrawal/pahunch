@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { MeeshoScreen, OrdersTabBar, ProductShot } from "@/components/brand";
-import { tourRing, useHighlight } from "@/components/coach";
+import { TapCloud, tourRing, useHighlight } from "@/components/coach";
 import { useDemo } from "@/components/demo-context";
 import { Alert, Button, inputClass } from "@/components/ui";
 import { formatINR } from "@/lib/domain/format";
@@ -10,6 +11,7 @@ import type { PayerArrangement } from "@/lib/domain/types";
 
 export function CustomerView() {
   const demo = useDemo();
+  const play = useSearchParams().get("play");
   const selected = demo.data?.selected;
   const [screen, setScreen] = useState<"orders" | "detail">("detail");
   const [editing, setEditing] = useState(true);
@@ -32,7 +34,10 @@ export function CustomerView() {
     setName(asha ? "Riya Sharma" : "");
     setAddress(asha ? "House 18, Gulmohar Lane, Dewas" : "");
     setLandmark(asha ? "Opposite the flour mill" : "");
-    setChoice(selected.readiness?.choice ?? (asha ? "nominate" : "receive_today"));
+    setChoice(
+      selected.readiness?.choice ??
+        (play === "tomorrow" ? "later_day" : play === "home" ? "receive_today" : asha ? "nominate" : "receive_today"),
+    );
     setDate(selected.readiness?.requestedDate ?? demo.data?.runDates[0]?.date ?? "");
     setPayer(selected.readiness?.payerArrangement ?? "neighbour_cod");
     setEditing(!selected.readiness);
@@ -40,7 +45,7 @@ export function CustomerView() {
     setError(null);
     // Reset the form when the order or the saved answer changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shipmentId, readinessId]);
+  }, [shipmentId, readinessId, play]);
 
   const pulseSave = useHighlight("save");
 
@@ -110,9 +115,12 @@ export function CustomerView() {
       onBack={screen === "detail" ? () => setScreen("orders") : undefined}
       footer={
         screen === "detail" && showForm ? (
-          <Button className={`w-full rounded-md py-3 text-base ${tourRing(pulseSave)}`} variant={choice === "cancel" ? "danger" : "primary"} onClick={() => void submit()}>
+          <>
+            <TapCloud id="save" />
+            <Button className={`w-full rounded-md py-3 text-base ${tourRing(pulseSave)}`} variant={choice === "cancel" ? "danger" : "primary"} onClick={() => void submit()}>
             {choice === "cancel" ? "Cancel this order" : "Save"}
-          </Button>
+            </Button>
+          </>
         ) : null
       }
     >

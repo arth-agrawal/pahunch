@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { tourRing, useHighlight } from "@/components/coach";
+import Link from "next/link";
+import { TapCloud, tourRing, useHighlight } from "@/components/coach";
 import { useDemo } from "@/components/demo-context";
 import { Alert, Button, Field, inputClass } from "@/components/ui";
 import { CountBar, Lifecycle, RouteDiagram, Timeline } from "@/components/visuals";
@@ -10,9 +11,9 @@ import { QUEUE_FILTERS } from "@/lib/domain/order-state";
 import type { QueueKey } from "@/lib/domain/types";
 
 const SCENARIOS = [
-  { id: "neighbour_cod", title: "Neighbour COD", detail: "Reset Asha to readiness pending. You still nominate and collect consent." },
-  { id: "buyer_prepay", title: "Buyer prepayment", detail: "Reset Asha. No platform payment is confirmed until you run the simulator." },
-  { id: "nominee_decline", title: "Nominee decline", detail: "Asha has nominated Riya. Riya has not responded." },
+  { id: "neighbour_cod", title: "Neighbour COD", detail: "Reset Saanvi to readiness pending. You still nominate and collect consent." },
+  { id: "buyer_prepay", title: "Buyer prepayment", detail: "Reset Saanvi. No platform payment is confirmed until you run the simulator." },
+  { id: "nominee_decline", title: "Nominee decline", detail: "Saanvi has nominated Riya. Riya has not responded." },
   { id: "stale_task", title: "Stale task", detail: "Dev has a current rider task. The order is not cancelled." },
   { id: "no_response", title: "No response", detail: "Pooja is a new buyer. The prompt is delivered and ordinary service remains." },
   { id: "address_repair", title: "Address repair", detail: "Meera's PIN and locality conflict is still unresolved." },
@@ -60,6 +61,10 @@ export function HubView() {
           {selected.shipment.buyerName}&apos;s {selected.shipment.itemName.toLowerCase()} is the open ticket. The other rows are the cases a desk actually gets: a later run, a bad address, a torn pack, a new buyer who never replied, a cancel after the rider already has a task.
         </p>
       </section>
+      <SimpleRelease selected={selected} onRun={(body) => void run(body)} error={error} />
+      <details className="rounded-xl border border-line bg-white p-4">
+        <summary className="cursor-pointer text-sm font-extrabold">Everything else on this desk</summary>
+        <div className="mt-4 space-y-4">
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Metric label="Open parcels" value={String(data.metrics.openParcels)} />
         <Metric label="Needs a decision" value={String(decisions)} />
@@ -309,7 +314,90 @@ export function HubView() {
           <Timeline events={selected.events} />
         </div>
       </section>
+        </div>
+      </details>
     </div>
+  );
+}
+
+function SimpleRelease({
+  selected,
+  onRun,
+  error,
+}: {
+  selected: NonNullable<NonNullable<ReturnType<typeof useDemo>["data"]>["selected"]>;
+  onRun: (body: Record<string, unknown>) => void;
+  error: string | null;
+}) {
+  const shipment = selected.shipment;
+  const buyer = shipment.buyerName.split(" ")[0] || shipment.buyerName;
+  const pulse = useHighlight("approve");
+  const later = selected.readiness?.choice === "later_day" && !shipment.laterConfirmed && !shipment.laterDeclined;
+  const home =
+    selected.readiness?.choice === "receive_today" &&
+    !selected.currentTask &&
+    shipment.phase !== "delivered" &&
+    shipment.phase !== "cancelled";
+  const neighbourReady = Boolean(
+    selected.nomination && selected.checksPass && !selected.currentTask && shipment.phase !== "delivered" && shipment.phase !== "cancelled",
+  );
+  const riding = Boolean(selected.currentTask && shipment.phase !== "delivered" && shipment.phase !== "cancelled");
+
+  let line = selected.recommendation.reason;
+  if (shipment.phase === "delivered") line = `Handed to ${selected.receipt?.recipientName ?? "the receiver"}. Nothing else to press.`;
+  else if (later) line = `${buyer} asked for another run. Confirming keeps the parcel at the hub. It is not delivered.`;
+  else if (neighbourReady) line = `Riya said yes. Send the rider to ${selected.nomination?.recipientName}. Collect ${formatINR(selected.codDue)}.`;
+  else if (home) line = `${buyer} will take it at her own address. The rider collects ${formatINR(selected.codDue)} from her.`;
+  else if (riding) line = "The rider already has this stop. Open their phone.";
+  else if (!selected.readiness) line = `${buyer} has not answered. There is nothing to release yet.`;
+
+  return (
+    <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-meesho/15">
+      <p className="text-xs font-extrabold tracking-wide text-meesho uppercase">One tap</p>
+      <h2 className="mt-1 text-xl font-extrabold">
+        {buyer}&apos;s {shipment.itemName.toLowerCase()}
+      </h2>
+      <p className="mt-2 text-sm leading-6">{line}</p>
+      {error ? (
+        <div className="mt-3">
+          <Alert>{error}</Alert>
+        </div>
+      ) : null}
+      <div className="mt-4 max-w-sm">
+        {later ? (
+          <>
+            <TapCloud id="approve" />
+            <Button className={`w-full ${tourRing(pulse)}`} onClick={() => onRun({ action: "confirmLaterRun", shipmentId: shipment.id, accept: true })}>
+              Confirm tomorrow
+            </Button>
+          </>
+        ) : null}
+        {neighbourReady ? (
+          <>
+            <TapCloud id="approve" />
+            <Button className={`w-full ${tourRing(pulse)}`} onClick={() => onRun({ action: "approveNeighbour", shipmentId: shipment.id })}>
+              Send the rider
+            </Button>
+          </>
+        ) : null}
+        {home ? (
+          <>
+            <TapCloud id="approve" />
+            <Button className={`w-full ${tourRing(pulse)}`} onClick={() => onRun({ action: "issueNormal", shipmentId: shipment.id })}>
+              Send the rider to {buyer}
+            </Button>
+          </>
+        ) : null}
+        {riding ? (
+          <Link
+            href={`/rider?order=${encodeURIComponent(shipment.id)}`}
+            className="flex min-h-11 items-center justify-center rounded-lg bg-meesho px-3 text-sm font-extrabold text-white"
+          >
+            Open the rider
+          </Link>
+        ) : null}
+      </div>
+    </section>
   );
 }
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { MeeshoScreen, ProductShot } from "@/components/brand";
-import { tourRing, useHighlight } from "@/components/coach";
+import { TapCloud, tourRing, useHighlight } from "@/components/coach";
 import { useDemo } from "@/components/demo-context";
 import { Alert } from "@/components/ui";
 import { formatINR } from "@/lib/domain/format";
@@ -104,6 +104,7 @@ export function NeighbourView() {
               </div>
             ) : (
               <div className="space-y-2 px-4 py-4">
+                <TapCloud id="yes-pay" />
                 {nomination.payerArrangement === "neighbour_cod" ? (
                   <button
                     type="button"
