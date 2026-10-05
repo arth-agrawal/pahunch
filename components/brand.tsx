@@ -118,7 +118,7 @@ export function MeeshoScreen({
         <span className={`text-sm font-bold ${partner ? "text-white" : "text-ink"}`}>{title}</span>
       </header>
       <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
-      {footer ? <div className="shrink-0 border-t border-line bg-white px-3 py-3">{footer}</div> : null}
+      {footer ? <div className="shrink-0 border-t border-line bg-white px-3 pt-3 pb-20 lg:pb-3">{footer}</div> : null}
     </div>
   );
 }

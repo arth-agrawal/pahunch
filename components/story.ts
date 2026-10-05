@@ -89,7 +89,7 @@ export function storyBeats(order: OrderDetail): StoryBeat[] {
       id: "rider",
       role: "rider",
       href: "/rider",
-      title: "On the bike",
+      title: "Rider 1",
       detail: riderDone
         ? shipment.phase === "delivered"
           ? `Handed to ${order.receipt?.recipientName ?? "the receiver"}.`
@@ -127,7 +127,7 @@ export function holdingLine(role: Role, order: OrderDetail): string {
     return `You are holding ${name}'s phone. ${buyer} cannot accept for them.`;
   }
   if (role === "rider") {
-    return "You are on the partner app. Collecting cash and handing the parcel are two separate taps.";
+    return "You are Rider 1. Collecting cash and handing the parcel are two separate taps.";
   }
   if (role === "hub") {
     return `${order.shipment.hubName} desk, same morning. The phone screens write into this queue.`;

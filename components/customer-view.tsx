@@ -30,13 +30,13 @@ export function CustomerView() {
 
   useEffect(() => {
     if (!selected) return;
-    const asha = selected.shipment.id === "PH-2401";
-    setName(asha ? "Riya Sharma" : "");
-    setAddress(asha ? "House 18, Gulmohar Lane, Dewas" : "");
-    setLandmark(asha ? "Opposite the flour mill" : "");
+    const main = selected.shipment.id === "PH-2401";
+    setName(selected.readiness?.neighbourName ?? "");
+    setAddress(selected.readiness?.neighbourAddress ?? "");
+    setLandmark(selected.readiness?.neighbourLandmark ?? "");
     setChoice(
       selected.readiness?.choice ??
-        (play === "tomorrow" ? "later_day" : play === "home" ? "receive_today" : asha ? "nominate" : "receive_today"),
+        (play === "tomorrow" ? "later_day" : play === "home" ? "receive_today" : main ? "nominate" : "receive_today"),
     );
     setDate(selected.readiness?.requestedDate ?? demo.data?.runDates[0]?.date ?? "");
     setPayer(selected.readiness?.payerArrangement ?? "neighbour_cod");
@@ -218,11 +218,11 @@ export function CustomerView() {
                 <div className="space-y-3 px-4 pb-4">
                   <label className="block text-xs font-extrabold text-muted">
                     Their name
-                    <input className={`${inputClass} mt-1`} value={name} onChange={(event) => setName(event.target.value)} placeholder="Name" />
+                    <input className={`${inputClass} mt-1`} value={name} onChange={(event) => setName(event.target.value)} placeholder="Their name" />
                   </label>
                   <label className="block text-xs font-extrabold text-muted">
                     Where the rider should stop
-                    <input className={`${inputClass} mt-1`} value={address} onChange={(event) => setAddress(event.target.value)} placeholder="House and lane" />
+                    <input className={`${inputClass} mt-1`} value={address} onChange={(event) => setAddress(event.target.value)} placeholder="House, lane, town" />
                   </label>
                   <label className="block text-xs font-extrabold text-muted">
                     Landmark

@@ -15,8 +15,50 @@ export function Shell({ role, children }: { role: Role; children: React.ReactNod
     <DemoProvider role={role}>
       <TourProvider>
         {role === "hub" || role === "pilot" ? <Desk role={role}>{children}</Desk> : <PhoneStage role={role}>{children}</PhoneStage>}
+        <GlobalProgress />
       </TourProvider>
     </DemoProvider>
+  );
+}
+
+function GlobalProgress() {
+  const demo = useDemo();
+  const params = useSearchParams();
+  const selected = demo.data?.selected;
+  if (!selected) return null;
+  const beats = storyBeats(selected);
+  const play = params.get("play");
+
+  return (
+    <nav
+      aria-label="Story progress"
+      className="fixed bottom-3 left-1/2 z-50 flex max-w-[calc(100%-1.5rem)] -translate-x-1/2 items-center gap-1 rounded-full border border-line bg-white px-2 py-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.16)]"
+    >
+      {beats.map((beat, index) => {
+        const query = new URLSearchParams();
+        query.set("order", selected.shipment.id);
+        if (play) query.set("play", play);
+        const here = beat.role === demo.role;
+        return (
+          <Link
+            key={beat.id}
+            href={`${beat.href}?${query.toString()}`}
+            className={`flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-extrabold whitespace-nowrap ${
+              here ? "bg-cream text-meesho" : beat.status === "done" ? "text-teal" : beat.status === "now" ? "text-meesho" : "text-muted"
+            }`}
+          >
+            <span
+              className={`grid h-5 w-5 place-items-center rounded-full text-[10px] ${
+                beat.status === "done" ? "bg-teal text-white" : beat.status === "now" || here ? "bg-meesho text-white" : "bg-[#eee] text-muted"
+              }`}
+            >
+              {beat.status === "done" ? "✓" : index + 1}
+            </span>
+            {beat.title}
+          </Link>
+        );
+      })}
+    </nav>
   );
 }
 
@@ -25,7 +67,7 @@ function PhoneStage({ role, children }: { role: Role; children: React.ReactNode 
   const time = demo.data?.nowLabel.match(/\d{2}:\d{2}/)?.[0] ?? "09:30";
 
   return (
-    <div className="min-h-screen bg-[#e4e4e4]">
+    <div className="min-h-screen bg-[#e4e4e4] pb-20">
       <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-4 px-3 py-3 lg:flex-row lg:items-start lg:gap-8 lg:px-6 lg:py-6">
         <div className="order-2 mx-auto w-full max-w-[390px] shrink-0 lg:order-1 lg:mx-0">
           <div className="bg-white lg:rounded-[42px] lg:bg-[#111] lg:p-3 lg:shadow-[0_28px_70px_rgba(0,0,0,0.28)]">
@@ -53,7 +95,7 @@ function PhoneStage({ role, children }: { role: Role; children: React.ReactNode 
 function Desk({ role, children }: { role: Role; children: React.ReactNode }) {
   const demo = useDemo();
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen bg-canvas pb-20">
       <header className="sticky top-0 z-20 border-b border-line bg-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-4 py-3">
           <MeeshoLogo />
@@ -160,7 +202,7 @@ function StoryRail({ role, compact = false }: { role: Role; compact?: boolean })
       )}
       {role === "customer" && selected.shipment.id === "PH-2401" ? (
         <p className="mt-3 text-sm leading-5 text-muted">
-          Saanvi is at the flour mill. Riya is in House 18, one lane over. The hop is 40 metres and about a minute.
+          Saanvi&apos;s kurta is the order to follow. If she names someone nearby, that person agrees on their own phone. Rider 1 only leaves after the hub says so.
         </p>
       ) : null}
       <div className="mt-5 border-t border-line pt-4">
@@ -257,7 +299,7 @@ function Simulations() {
   }
 
   const stories = [
-    { id: "neighbour", title: "Riya takes it", detail: "Saanvi names her. Riya pays ₹299." },
+    { id: "neighbour", title: "Someone nearby", detail: "Saanvi types their name. They pay the cash." },
     { id: "tomorrow", title: "Send it tomorrow", detail: "The hub confirms. Nobody rides today." },
     { id: "home", title: "Saanvi is home", detail: "Same address. She pays the rider." },
   ] as const;

@@ -47,7 +47,7 @@ export function RiderView() {
       <header className="bg-[#171717] px-4 pt-4 pb-5 text-white">
         <div className="flex items-center justify-between">
           <MeeshoLogo light className="text-[20px]" />
-          <span className="text-xs font-bold tracking-wide text-white/70 uppercase">Delivery partner</span>
+          <span className="text-sm font-extrabold">Rider 1</span>
         </div>
         <p className="mt-4 text-sm text-white/70">{shipment.hubName} · today&apos;s run</p>
         <h1 className="text-2xl font-extrabold">{task ? "1 stop" : "No stop"}</h1>
@@ -57,7 +57,7 @@ export function RiderView() {
           </p>
         ) : null}
       </header>
-      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3">
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3 pb-20">
         {!task ? (
           <section className="rounded-xl bg-white p-4 text-sm">
             <p className="font-extrabold">Nothing has been released</p>

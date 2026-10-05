@@ -13,7 +13,7 @@ import type { QueueKey } from "@/lib/domain/types";
 const SCENARIOS = [
   { id: "neighbour_cod", title: "Neighbour COD", detail: "Reset Saanvi to readiness pending. You still nominate and collect consent." },
   { id: "buyer_prepay", title: "Buyer prepayment", detail: "Reset Saanvi. No platform payment is confirmed until you run the simulator." },
-  { id: "nominee_decline", title: "Nominee decline", detail: "Saanvi has nominated Riya. Riya has not responded." },
+  { id: "nominee_decline", title: "Nominee decline", detail: "Saanvi has named someone nearby. They have not responded." },
   { id: "stale_task", title: "Stale task", detail: "Dev has a current rider task. The order is not cancelled." },
   { id: "no_response", title: "No response", detail: "Pooja is a new buyer. The prompt is delivered and ordinary service remains." },
   { id: "address_repair", title: "Address repair", detail: "Meera's PIN and locality conflict is still unresolved." },
@@ -346,7 +346,7 @@ function SimpleRelease({
   let line = selected.recommendation.reason;
   if (shipment.phase === "delivered") line = `Handed to ${selected.receipt?.recipientName ?? "the receiver"}. Nothing else to press.`;
   else if (later) line = `${buyer} asked for another run. Confirming keeps the parcel at the hub. It is not delivered.`;
-  else if (neighbourReady) line = `Riya said yes. Send the rider to ${selected.nomination?.recipientName}. Collect ${formatINR(selected.codDue)}.`;
+  else if (neighbourReady) line = `${selected.nomination?.recipientName ?? "They"} said yes. Send Rider 1. Collect ${formatINR(selected.codDue)}.`;
   else if (home) line = `${buyer} will take it at her own address. The rider collects ${formatINR(selected.codDue)} from her.`;
   else if (riding) line = "The rider already has this stop. Open their phone.";
   else if (!selected.readiness) line = `${buyer} has not answered. There is nothing to release yet.`;

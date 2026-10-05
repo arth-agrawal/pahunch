@@ -67,7 +67,7 @@ function cueFor(role: Role, order: OrderDetail, play: string | null): Cue {
       total: TOTAL,
       title: "Tap Save",
       where: "Pink button at the bottom of the phone",
-      detail: "Riya is already filled in. Save asks her. She has to agree on her own phone. The rider does not leave yet.",
+      detail: "Type who can take it, and where the rider should stop. Save asks that person. They have to agree on their own phone.",
     };
   }
 
@@ -229,7 +229,7 @@ function useTour() {
   return { on, skip, show };
 }
 
-const STEP_LABELS = ["Order", "Neighbour", "Hub", "Cash", "Handover"];
+const STEP_LABELS = ["Order", "Neighbour", "Hub", "Cash", "Rider 1"];
 
 export function CoachCard() {
   const tour = useTourState();

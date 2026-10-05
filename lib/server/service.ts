@@ -1464,7 +1464,7 @@ export function applyScenario(db: Database, body: Action): ActionResult {
     return {
       ok: true,
       shipmentId: "PH-2401",
-      message: "Saanvi nominated Riya for neighbour COD. Riya has not responded. Decline is still yours to record.",
+      message: "Saanvi nominated someone nearby for neighbour COD. They have not responded. Decline is still yours to record.",
     };
   }
   if (scenario === "stale_task") {
