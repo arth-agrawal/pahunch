@@ -42,7 +42,7 @@ function codPath(database: ReturnType<typeof db>, payer: "neighbour_cod" | "buye
     choice: "nominate",
     neighbourName: "Riya Sharma",
     neighbourAddress: "Flat 18, Lake View Society, Powai",
-    neighbourLandmark: "Opposite the flour mill",
+    neighbourLandmark: "Opposite the D-Mart",
     payer,
   });
 }
