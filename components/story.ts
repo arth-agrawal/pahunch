@@ -16,10 +16,22 @@ function firstName(name: string): string {
   return name.split(" ")[0] || name;
 }
 
+/** The three customers a first-time visitor should meet. The rest stay in the hub table. */
+export const FEATURED_ORDERS = ["PH-2401", "PH-2402", "PH-2403"] as const;
+
+/** One rider per hub keeps the cast small: Powai is Rider 1, everywhere else is Rider 2. */
+export function riderLabel(hubName: string): string {
+  return hubName === "Powai" ? "Rider 1" : "Rider 2";
+}
+
 export function storyBeats(order: OrderDetail): StoryBeat[] {
   const shipment = order.shipment;
-  const nominated = order.readiness?.choice === "nominate" || order.nomination != null;
-  const buyerDone = order.readiness != null || shipment.phase === "cancelled" || shipment.phase === "delivered";
+  const nominated =
+    order.readiness?.choice === "nominate" || order.nomination != null;
+  const buyerDone =
+    order.readiness != null ||
+    shipment.phase === "cancelled" ||
+    shipment.phase === "delivered";
   const consent = order.nomination?.consent;
   const neighbourDone =
     consent === "accepted_receive" ||
@@ -34,8 +46,14 @@ export function storyBeats(order: OrderDetail): StoryBeat[] {
     shipment.laterConfirmed ||
     shipment.phase === "cancelled" ||
     order.currentTask != null;
-  const riderDone = shipment.phase === "delivered" || shipment.phase === "cancelled";
-  const closed = shipment.phase === "delivered" || shipment.phase === "cancelled";
+  const waitingTomorrow =
+    shipment.phase === "scheduled_later" && order.currentTask == null;
+  const riderDone =
+    shipment.phase === "delivered" || shipment.phase === "cancelled";
+  const closed =
+    shipment.phase === "delivered" ||
+    shipment.phase === "cancelled" ||
+    waitingTomorrow;
   const active: BeatId | null = closed
     ? null
     : !buyerDone
@@ -46,7 +64,9 @@ export function storyBeats(order: OrderDetail): StoryBeat[] {
           ? "hub"
           : "rider";
 
-  const neighbourName = firstName(order.nomination?.recipientName ?? "Neighbour");
+  const neighbourName = firstName(
+    order.nomination?.recipientName ?? "Neighbour",
+  );
   const buyer = firstName(shipment.buyerName);
 
   const beats: StoryBeat[] = [
@@ -55,7 +75,9 @@ export function storyBeats(order: OrderDetail): StoryBeat[] {
       role: "customer",
       href: "/",
       title: `${buyer}'s Meesho`,
-      detail: buyerDone ? order.readinessLabel : "Parcel is at the hub. No answer yet, so the normal attempt still stands.",
+      detail: buyerDone
+        ? order.readinessLabel
+        : "Parcel is at the hub. No answer yet, so the normal attempt still stands.",
       status: active === "buyer" ? "now" : buyerDone ? "done" : "later",
     },
   ];
@@ -81,15 +103,19 @@ export function storyBeats(order: OrderDetail): StoryBeat[] {
       id: "hub",
       role: "hub",
       href: "/hub",
-      title: "Local hub",
-      detail: hubDone ? "Released, held, or closed." : `The bag stays at ${shipment.hubName} until this portal releases it.`,
+      title: `${shipment.hubName} hub`,
+      detail: hubDone
+        ? waitingTomorrow
+          ? "Confirmed for tomorrow's run. The parcel stays on the shelf."
+          : "Released, held, or closed."
+        : `The parcel stays at the ${shipment.hubName} hub until this portal releases it.`,
       status: active === "hub" ? "now" : hubDone ? "done" : "later",
     },
     {
       id: "rider",
       role: "rider",
       href: "/rider",
-      title: "Rider 1",
+      title: riderLabel(shipment.hubName),
       detail: riderDone
         ? shipment.phase === "delivered"
           ? `Handed to ${order.receipt?.recipientName ?? "the receiver"}.`
@@ -98,7 +124,9 @@ export function storyBeats(order: OrderDetail): StoryBeat[] {
           ? order.currentTask.paymentDue === 0
             ? "Do not collect cash. Hand the parcel over."
             : `Collect ₹${order.currentTask.paymentDue}, then confirm the handover.`
-          : "No stop yet.",
+          : waitingTomorrow
+            ? "Not today."
+            : "No stop yet.",
       status: active === "rider" ? "now" : riderDone ? "done" : "later",
     },
   );
@@ -106,7 +134,10 @@ export function storyBeats(order: OrderDetail): StoryBeat[] {
   return beats;
 }
 
-export function continueStory(order: OrderDetail, role: Role): { href: string; label: string } | null {
+export function continueStory(
+  order: OrderDetail,
+  role: Role,
+): { href: string; label: string } | null {
   const live = storyBeats(order).find((beat) => beat.status === "now");
   const query = `order=${encodeURIComponent(order.shipment.id)}`;
   if (!live) {
@@ -127,10 +158,10 @@ export function holdingLine(role: Role, order: OrderDetail): string {
     return `You are holding ${name}'s phone. ${buyer} cannot accept for them.`;
   }
   if (role === "rider") {
-    return "You are Rider 1. Collecting cash and handing the parcel are two separate taps.";
+    return `You are ${riderLabel(order.shipment.hubName)}. Collecting cash and handing the parcel are two separate taps.`;
   }
   if (role === "hub") {
     return `Local hub portal for ${order.shipment.hubName}. The phones write into this queue.`;
   }
-  return "The six orders you can play, counted once. This is a scenario, not a measured saving.";
+  return "Every order in this morning's queue, counted once. This is a scenario, not a measured saving.";
 }

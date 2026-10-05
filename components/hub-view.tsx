@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { TapCloud, tourRing, useHighlight } from "@/components/coach";
 import { useDemo } from "@/components/demo-context";
+import { riderLabel } from "@/components/story";
 import { Alert, Button, Field, inputClass } from "@/components/ui";
 import { CountBar, Lifecycle, RouteDiagram, Timeline } from "@/components/visuals";
 import { formatINR, formatRate } from "@/lib/domain/format";
@@ -27,7 +28,7 @@ export function HubView() {
   const [minutes, setMinutes] = useState("");
   const [capMeters, setCapMeters] = useState("");
   const [capMinutes, setCapMinutes] = useState("");
-  const [repairNote, setRepairNote] = useState("Caller confirmed the Dewas locality. Manual hub note only.");
+  const [repairNote, setRepairNote] = useState("Caller confirmed the Powai locality. Manual hub note only.");
   const [parcelNote, setParcelNote] = useState("Outer pack inspected at the hub.");
   const [cause, setCause] = useState("supplier");
   const pulseApprove = useHighlight("approve");
@@ -58,7 +59,7 @@ export function HubView() {
         <p className="text-xs font-extrabold tracking-wide text-meesho uppercase">Local hub portal · {selected.shipment.hubName}</p>
         <h1 className="text-lg font-extrabold">What leaves this hub today</h1>
         <p className="mt-1 text-sm text-muted">
-          {selected.shipment.buyerName}&apos;s {selected.shipment.itemName.toLowerCase()} is the open ticket. The other rows are what this portal actually gets: a later run, a bad address, a torn pack, a new buyer who never replied, a cancel after Rider 1 already has a task.
+          {selected.shipment.buyerName}&apos;s {selected.shipment.itemName.toLowerCase()} is the open ticket. The other rows are what this portal actually gets: a later run, a bad address, a torn pack, a new buyer who never replied, a cancel after the rider already has a task.
         </p>
       </section>
       <SimpleRelease selected={selected} onRun={(body) => void run(body)} error={error} />
@@ -346,7 +347,7 @@ function SimpleRelease({
   let line = selected.recommendation.reason;
   if (shipment.phase === "delivered") line = `Handed to ${selected.receipt?.recipientName ?? "the receiver"}. Nothing else to press.`;
   else if (later) line = `${buyer} asked for another run. Confirming keeps the parcel at the hub. It is not delivered.`;
-  else if (neighbourReady) line = `${selected.nomination?.recipientName ?? "They"} said yes. Send Rider 1. Collect ${formatINR(selected.codDue)}.`;
+  else if (neighbourReady) line = `${selected.nomination?.recipientName ?? "They"} said yes. Send ${riderLabel(selected.shipment.hubName)}. Collect ${formatINR(selected.codDue)}.`;
   else if (home) line = `${buyer} will take it at her own address. The rider collects ${formatINR(selected.codDue)} from her.`;
   else if (riding) line = "The rider already has this stop. Open their phone.";
   else if (!selected.readiness) line = `${buyer} has not answered. There is nothing to release yet.`;

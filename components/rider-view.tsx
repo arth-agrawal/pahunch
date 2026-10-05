@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { MeeshoLogo, ProductShot } from "@/components/brand";
 import { TapCloud, tourRing, useHighlight } from "@/components/coach";
 import { useDemo } from "@/components/demo-context";
+import { riderLabel } from "@/components/story";
 import { Alert } from "@/components/ui";
 import { formatINR } from "@/lib/domain/format";
 
@@ -47,9 +48,9 @@ export function RiderView() {
       <header className="bg-[#171717] px-4 pt-4 pb-5 text-white">
         <div className="flex items-center justify-between">
           <MeeshoLogo light className="text-[20px]" />
-          <span className="text-sm font-extrabold">Rider 1</span>
+          <span className="text-sm font-extrabold">{riderLabel(shipment.hubName)}</span>
         </div>
-        <p className="mt-4 text-sm text-white/70">{shipment.hubName} · today&apos;s run</p>
+        <p className="mt-4 text-sm text-white/70">{shipment.hubName} hub · today&apos;s run</p>
         <h1 className="text-2xl font-extrabold">{task ? "1 stop" : "No stop"}</h1>
         {demo.offlineFrozen ? (
           <p className="mt-3 rounded-md bg-[#3a1d1d] px-3 py-2 text-sm text-[#ffd0d0]">

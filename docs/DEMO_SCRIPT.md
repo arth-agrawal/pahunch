@@ -2,7 +2,7 @@
 
 0:00–0:20 — Open the hub. Say: “Pahunch establishes readiness, receiver and COD payer before dispatch instead of only retrying after failure.” Select PH-2401, Saanvi’s ₹299 order.
 
-0:20–0:55 — Switch to Customer. Open the local-hub update. Nominate Riya Sharma at House 18, Gulmohar Lane, and choose neighbour-paid COD. The hub queue now waits for Riya. Nomination alone is not approval.
+0:20–0:55 — Switch to Customer. Open the local-hub update. Nominate Riya Sharma at Flat 18, Lake View Society, Powai, and choose neighbour-paid COD. The hub queue now waits for Riya. Nomination alone is not approval.
 
 0:55–1:15 — Switch to Neighbour. Agree to receive and to pay ₹299. Return to the hub and show that the separate consent and payer checks changed.
 

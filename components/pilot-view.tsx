@@ -41,9 +41,9 @@ export function PilotView() {
     <div className="space-y-6">
       <section className="rounded-xl border border-line bg-white p-4">
         <p className="text-sm font-extrabold text-meesho">From the morning you just played</p>
-        <h1 className="text-2xl font-extrabold text-plum">What those six orders actually did</h1>
+        <h1 className="text-2xl font-extrabold text-plum">What this morning&apos;s orders actually did</h1>
         <p className="mt-2 max-w-3xl text-sm leading-6">
-          Counts use unique orders, not repeated clicks. Current nominations are the nominations still active. These six orders do not measure RTO prevention.
+          Counts use unique orders, not repeated clicks. Current nominations are the nominations still active. A handful of demo orders do not measure RTO prevention.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Stat label="Eligible COD orders" value={formatCount(metrics.eligible)} />

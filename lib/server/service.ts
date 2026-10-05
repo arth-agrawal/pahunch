@@ -1440,7 +1440,7 @@ export function applyScenario(db: Database, body: Action): ActionResult {
     return {
       ok: true,
       shipmentId: "PH-2401",
-      message: "Prepared PH-2401. Saanvi's ₹299 order is at the Dewas hub with readiness pending. Nothing has been nominated or delivered.",
+      message: "Prepared PH-2401. Saanvi's ₹299 order is at the Powai hub with readiness pending. Nothing has been nominated or delivered.",
     };
   }
   if (scenario === "buyer_prepay") {
@@ -1501,7 +1501,7 @@ export function resetDemo(db: Database, body: Action): ActionResult {
     throw new DomainError("Reset needs confirmation. This only clears Pahunch demo records.");
   }
   seedDatabase(db);
-  return { ok: true, message: "Demo records reset to the six fictional orders. Nothing outside this database was touched." };
+  return { ok: true, message: "Demo records reset to this morning's fictional orders. Nothing outside this database was touched." };
 }
 
 const HANDLERS: Record<string, (db: Database, body: Action) => ActionResult> = {

@@ -41,7 +41,7 @@ function codPath(database: ReturnType<typeof db>, payer: "neighbour_cod" | "buye
     shipmentId: "PH-2401",
     choice: "nominate",
     neighbourName: "Riya Sharma",
-    neighbourAddress: "House 18, Gulmohar Lane, Dewas",
+    neighbourAddress: "Flat 18, Lake View Society, Powai",
     neighbourLandmark: "Opposite the flour mill",
     payer,
   });
@@ -250,7 +250,7 @@ describe("controls", () => {
   it("holds PIN and parcel issues until review, without changing buyer refusals", () => {
     const database = db();
     expect(() => issueNormal(database, { shipmentId: "PH-2403" })).toThrow(/destination/i);
-    addressRepair(database, { shipmentId: "PH-2403", note: "Caller confirmed Gulmohar Lane, Dewas. Manual review only." });
+    addressRepair(database, { shipmentId: "PH-2403", note: "Caller confirmed Chandivali, Powai. Manual review only." });
     issueNormal(database, { shipmentId: "PH-2403" });
     expect(getDemoState(database, "PH-2403").selected?.currentTask).toBeTruthy();
 
@@ -301,7 +301,7 @@ describe("controls", () => {
       shipmentId: "PH-2401",
       choice: "nominate",
       neighbourName: "Neel Sharma",
-      neighbourAddress: "House 19, Gulmohar Lane, Dewas",
+      neighbourAddress: "Flat 19, Lake View Society, Powai",
       neighbourLandmark: "Next to the flour mill",
       payer: "neighbour_cod",
     });

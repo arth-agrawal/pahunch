@@ -36,3 +36,31 @@ body {
     transition: none !important;
   }
 }
+
+@keyframes tap-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 225, 74, 0.9);
+  }
+  60% {
+    box-shadow: 0 0 0 12px rgba(255, 225, 74, 0);
+  }
+}
+
+.tap-pulse {
+  animation: tap-pulse 1.4s ease-out infinite;
+}
+
+@keyframes tap-nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+.tap-nudge {
+  animation: tap-nudge 0.9s ease-in-out infinite;
+}
